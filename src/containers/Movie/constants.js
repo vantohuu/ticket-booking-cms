@@ -1,0 +1,16 @@
+export const FETCH_MOVIES = 'movie/FETCH_MOVIES';
+export const FETCH_ACTORS = 'movie/FETCH_ACTORS';
+export const FETCH_GENRES = 'movie/FETCH_GENRES';
+export const CREATE_MOVIE = 'movie/CREATE_MOVIE';
+export const UPDATE_MOVIE = 'movie/UPDATE_MOVIE';
+export const DELETE_MOVIE = 'movie/DELETE_MOVIE';
+export const SET_MOVIES = 'movie/SET_MOVIES';
+export const SET_ACTORS = 'movie/SET_ACTORS';
+export const SET_GENRES = 'movie/SET_GENRES';
+export const SHOW_BEGIN_EDIT_MODAL = 'movie/SHOW_BEGIN_EDIT_MODAL';
+export const SHOW_END_EDIT_MODAL = 'movie/SHOW_END_EDIT_MODAL';
+export const SET_BEGIN_LOADING_STATUS = 'movie/SET_BEGIN_LOADING_STATUS';
+export const SET_END_LOADING_STATUS = 'movie/SET_END_LOADING_STATUS';
+export const SET_FAILED_MESSAGE = 'movie/SET_FAILED_MESSAGE';
+export const SET_SUCCESS_MESSAGE = 'movie/SET_SUCCESS_MESSAGE';
+export const CLEAR_MESSAGES = 'movie/CLEAR_MESSAGES';

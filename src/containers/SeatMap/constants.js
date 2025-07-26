@@ -1,0 +1,13 @@
+export const FETCH_SEATS = 'seat/FETCH_SEATS';
+export const FETCH_SEATS_BY_ROOM = 'seat/FETCH_SEATS_BY_ROOM';
+export const CREATE_SEAT = 'seat/CREATE_SEAT';
+export const UPDATE_SEAT = 'seat/UPDATE_SEAT';
+export const DELETE_SEAT = 'seat/DELETE_SEAT';
+export const SET_SEATS = 'seat/SET_SEATS';
+export const SHOW_BEGIN_EDIT_MODAL = 'seat/SHOW_BEGIN_EDIT_MODAL';
+export const SHOW_END_EDIT_MODAL = 'seat/SHOW_END_EDIT_MODAL';
+export const SET_BEGIN_LOADING_STATUS = 'seat/SET_BEGIN_LOADING_STATUS';
+export const SET_END_LOADING_STATUS = 'seat/SET_END_LOADING_STATUS';
+export const SET_FAILED_MESSAGE = 'seat/SET_FAILED_MESSAGE';
+export const SET_SUCCESS_MESSAGE = 'seat/SET_SUCCESS_MESSAGE';
+export const CLEAR_MESSAGES = 'seat/CLEAR_MESSAGES';

@@ -1,0 +1,11 @@
+export const HTTP_CODE = {
+  SUCCESS: 200,
+  UNCATEGORIZED_EXCEPTION: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  SERVER_ERROR: 500,
+};
+
+export const API_CODE = {
+  SUCCESS: 1000,
+};
