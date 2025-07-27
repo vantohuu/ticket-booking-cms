@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Input, message } from "antd";
+import dayjs from "dayjs";
 import {
   fetchShowtimes,
   fetchCinemas,
@@ -18,6 +19,8 @@ import {
 import PageLayout from "../../layouts/PageLayout";
 import AddEditShowtime from "./AddEditPage";
 import Loading from "../../components/Loading";
+
+const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3000/";
 
 const ShowtimeList = () => {
   const dispatch = useDispatch();
@@ -80,7 +83,7 @@ const ShowtimeList = () => {
       onFilter: (value, record) =>
         record.movie?.title?.toLowerCase().includes(value),
       sorter: (a, b) => a.movie?.title?.localeCompare(b.movie?.title),
-      width: "25%",
+      width: "20%",
       render: (text, record) => record.movie?.title || "N/A",
     },
     {
@@ -88,15 +91,15 @@ const ShowtimeList = () => {
       dataIndex: "cinemaName",
       key: "cinemaName",
       sorter: (a, b) => a.cinemaName.localeCompare(b.cinemaName),
-      width: "20%",
-      render: (text, record) => record.room?.cinemaName || "N/A",
+      width: "15%",
+      render: (text, record) => record.cinemaName || "N/A",
     },
     {
       title: "Phòng chiếu",
       dataIndex: "roomName",
       key: "roomName",
       sorter: (a, b) => a.roomName.localeCompare(b.roomName),
-      width: "20%",
+      width: "15%",
       render: (text, record) => record.room?.name || "N/A",
     },
     {
@@ -105,7 +108,8 @@ const ShowtimeList = () => {
       key: "startTime",
       sorter: (a, b) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
-      width: "25%",
+      width: "10%",
+      render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm:ss"),
     },
     {
       title: "Giá vé",
@@ -113,6 +117,20 @@ const ShowtimeList = () => {
       key: "ticketPrice",
       sorter: (a, b) => a.ticketPrice - b.ticketPrice,
       width: "10%",
+    },
+    {
+      title: "Quản lí vé",
+      dataIndex: "id",
+      key: "id",
+      width: "30%",
+      render: (_, showtime) => (
+        <a
+          href={`${BASE_URL}seat-management?showtimeId=${showtime.id}`}
+          target="_blank"
+        >
+          Xem trạng thái vé phòng chiếu
+        </a>
+      ),
     },
     {
       title: "Sửa",

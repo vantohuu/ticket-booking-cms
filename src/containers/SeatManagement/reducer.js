@@ -4,6 +4,7 @@ const initialState = {
   seats: [],
   tickets : [],
   avaiableSeats: [],
+  showtime: null,
   invoice : null,
   user : null,
   showEditModal: false,
@@ -16,6 +17,8 @@ const seatManagementReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_SEATS:
       return { ...state, seats: action.payload };
+    case types.SET_SHOWTIME:
+      return { ...state, showtime: action.payload };
     case types.SET_TICKETS:
       return { ...state, tickets: action.payload };
     case types.SET_INVOICE:

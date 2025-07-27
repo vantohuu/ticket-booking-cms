@@ -9,7 +9,7 @@ import LoginPage from "../src/containers/Login/index";
 import NotFoundPage from "../src/containers/NotFound/index";
 import PrivateRoute from "../src/components/PrivateRoute";
 import SeatManagementPage from "./containers/SeatManagement/Loadable";
-
+import QRPage from "./containers/QR/index";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +19,7 @@ function App() {
 
         {/* Protected */}
         <Route element={<PrivateRoute />}>
+          <Route path="/" element={<QRPage />} />
           <Route path="/movie" element={<MoviePage />} />
           <Route path="/cinema" element={<CinemaPage />} />
           <Route path="/room" element={<RoomPage />} />

@@ -8,6 +8,7 @@ import {
   ClockCircleOutlined,
   BarChartOutlined,
   IdcardOutlined,
+  ScanOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import AppHeader from "../components/Header";
@@ -44,6 +45,9 @@ function PageLayout({ children }) {
           onClick={handleMenuClick}
           className="h-full"
         >
+          <Menu.Item key="/" icon={<ScanOutlined />}>
+            Scan QR vé
+          </Menu.Item>
           <Menu.Item key="/movie" icon={<VideoCameraOutlined />}>
             Quản lí phim
           </Menu.Item>

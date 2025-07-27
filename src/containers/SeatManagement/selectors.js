@@ -1,5 +1,6 @@
 export const selectSeats = (state) => state.seatManagement.seats;
-export const selectBookedTickets = (state) => state.seatManagement.bookedTickets;
+export const selectShowtime = (state) => state.seatManagement.showtime;
+export const selectBookedTickets = (state) => state.seatManagement.tickets;
 export const selectAvaiableSeats = (state) => state.seatManagement.avaiableSeats;
 export const selectIsShowEditModal = (state) =>  state.seatManagement && state.seatManagement.showEditModal ? state.seatManagement.showEditModal : false;
 export const selectIsLoading = (state) => state.seatManagement.loading;

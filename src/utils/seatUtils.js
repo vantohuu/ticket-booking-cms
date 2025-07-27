@@ -1,31 +1,24 @@
 export function convertSeatsTo2DArray(seats) {
-  const seatMap = {};
+  const maxRow = Math.max(...seats.map((seat) => seat.seatRow));
+  const maxCol = Math.max(...seats.map((seat) => seat.seatColumn));
 
-  seats.forEach(seat => {
-    console.log(seat)
-    const row = seat.name[0]; 
-    if (!seatMap[row]) {
-      seatMap[row] = [];
-    }
-    seatMap[row].push(seat.name);
-  });
+  const grid = Array.from({ length: maxRow }, () =>
+    Array.from({ length: maxCol }, () => null)
+  );
 
-  const sortedRows = Object.keys(seatMap).sort();
-  const result = sortedRows.map(row => seatMap[row].sort((a, b) => {
-    const numA = parseInt(a.slice(1));
-    const numB = parseInt(b.slice(1));
-    return numA - numB;
-  }));
-
-  return result;
+  for (const seat of seats) {
+    const row = seat.seatRow - 1;
+    const col = seat.seatColumn - 1;
+    grid[row][col] = seat.name;
+  }
+  return grid;
 }
 
-export function convertSeatsTo1DArray(seats) {
+export function convertTicketsTo1DSeatArray(tickets) {
   const result = [];
-  if (seats)
-  {
-    seats.forEach(seat => {
-      result.push(seat.name);
+  if (tickets) {
+    tickets.forEach((ticket) => {
+      result.push(ticket.seatName);
     });
   }
   return result;
