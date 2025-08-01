@@ -1,27 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { login } from './../../api/loginApi'; 
-import {setTokens} from '../../utils/tokenUtils';
+import { login, logout } from './../../api/loginApi';
+import { setTokens, getAccessToken, clearTokens } from '../../utils/tokenUtils';
 import { useNavigate } from 'react-router-dom';
-import { HTTP_CODE } from '../../constants/apiCode';
-import { API_CODE } from '../../constants/apiCode';
-
+import { HTTP_CODE, API_CODE } from '../../constants/apiCode';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
+  useEffect(() => {
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      logout({ token: accessToken })
+        .finally(() => {
+          clearTokens(); 
+        });
+    }
+  }, []);
+
   const onFinish = async (values) => {
     try {
-      const response  = await login(values);
+      const response = await login(values);
       if (response.status === HTTP_CODE.SUCCESS && response.data.code === API_CODE.SUCCESS) {
         setTokens({
           accessToken: response.data.result.token,
           refreshToken: response.data.result.token,
         });
-        navigate('/movie');
+        navigate('/');
       } else {
-         messageApi.error('Đăng nhập thất bại. Vui lòng kiểm tra thông tin');
+        messageApi.error('Đăng nhập thất bại. Vui lòng kiểm tra thông tin');
       }
     } catch (error) {
       messageApi.error('Đăng nhập thất bại. Vui lòng kiểm tra thông tin');

@@ -119,13 +119,6 @@ const MovieList = () => {
       render: (date) => (date ? new Date(date).toLocaleDateString() : ""),
     },
     {
-      title: "Ngày kết thúc",
-      dataIndex: "endDate",
-      key: "endDate",
-      width: "10%",
-      render: (date) => (date ? new Date(date).toLocaleDateString() : ""),
-    },
-    {
       title: "Thể loại",
       dataIndex: "genres",
       key: "genres",
@@ -142,25 +135,7 @@ const MovieList = () => {
         actors?.length > 0
           ? actors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")
           : "Không có",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      width: "10%",
-      render: (status) => {
-        switch (status) {
-          case "NOW_SHOWING":
-            return "Đang chiếu";
-          case "COMING_SOON":
-            return "Sắp chiếu";
-          case "ENDED":
-            return "Ngừng chiếu";
-          default:
-            return status;
-        }
-      },
-    },
+    }, 
     {
       title: "Sửa",
       key: "edit",

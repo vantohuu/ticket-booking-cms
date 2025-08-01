@@ -5,7 +5,8 @@ import roomSaga from '../containers/Room/saga';
 import seatSaga from '../containers/SeatMap/saga'; 
 import showtimeSaga from '../containers/Showtime/saga'; 
 import seatManagementSaga from '../containers/SeatManagement/saga';
-
+import profileSaga from '../containers/Profile/saga';
+import reportSaga from '../containers/Report/saga';
 export default function* rootSaga() {
   yield all([
     fork(movieSaga),
@@ -14,5 +15,7 @@ export default function* rootSaga() {
     fork(seatSaga),
     fork(showtimeSaga),
     fork(seatManagementSaga),
+    fork(profileSaga),
+    fork(reportSaga)
   ]);
 }

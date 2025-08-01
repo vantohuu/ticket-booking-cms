@@ -29,18 +29,14 @@ const SeatManagement = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Lấy giá trị từ URL nếu có
   const roomIdFromQuery = searchParams.get("roomId");
   const showtimeIdFromQuery = searchParams.get("showtimeId");
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // Input state
-  const [roomIdInput, setRoomIdInput] = useState(roomIdFromQuery || "");
   const [showtimeIdInput, setShowtimeIdInput] = useState(
     showtimeIdFromQuery || ""
   );
 
-  // State chính để trigger API
   const [selectedRoomId, setSelectedRoomId] = useState(roomIdFromQuery || null);
   const [selectedShowtimeId, setSelectedShowtimeId] = useState(
     showtimeIdFromQuery || null
@@ -52,16 +48,26 @@ const SeatManagement = () => {
   const showtime = useSelector(selectShowtime);
   const room = showtime?.room || null;
   const seats = room?.seats || [];
+
   const isLoading = useSelector(selectIsLoading);
 
-  console.log("Showtime:", showtime);
-
   const arraySeats = useMemo(() => convertSeatsTo2DArray(seats), [seats]);
+
+
   const arrayBookedSeats = useMemo(
     () => convertTicketsTo1DSeatArray(bookedTickets),
     [bookedTickets]
   );
 
+  const arrayScannedSeats = useMemo(() =>
+    convertTicketsTo1DSeatArray(
+      bookedTickets.filter(ticket => ticket.isScanned)
+    ),
+    [bookedTickets]
+  );
+  console.log("scannedSeats:", arrayScannedSeats);
+
+  console.log("Booked Tickets:", bookedTickets);
   const handleSelectSeat = (seatName) => {
     const ticket = bookedTickets.find((t) => t.seatName === seatName);
     if (ticket) {
@@ -131,6 +137,7 @@ const SeatManagement = () => {
         <SeatMap
           seats={arraySeats}
           bookedSeats={arrayBookedSeats}
+          scannedSeats={arrayScannedSeats}
           onSelect={handleSelectSeat}
           selectedTicket={selectedTicket}
           showtime={showtime}

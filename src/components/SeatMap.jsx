@@ -4,13 +4,14 @@ import dayjs from "dayjs";
 const SeatMap = ({
   seats = [],
   bookedSeats = [],
+  scannedSeats = [],
   onSelect,
   selectedTicket,
   showtime,
 }) => {
   const isSelectedSeatScanned =
     selectedTicket?.isScanned ?? false; // trạng thái quét QR ghế đang chọn
-
+  
   return (
     <div className="flex gap-10 items-start">
       {/* Legend */}
@@ -55,7 +56,7 @@ const SeatMap = ({
             <strong>Ghế:</strong> {selectedTicket.seatName}
           </p>
           <p>
-            <strong>Giá:</strong> {selectedTicket.price} USD
+            <strong>Giá:</strong> {selectedTicket.price} VND  
           </p>
           <p>
             <strong>Trạng thái:</strong>{" "}
@@ -85,10 +86,7 @@ const SeatMap = ({
           <div key={rowIndex} className="flex gap-4">
             {row.map((seat) => {
               const isBooked = bookedSeats.includes(seat);
-              // Nếu ghế đang chọn và đã quét thì tô xanh lá
-              const isThisSeatSelected = selectedTicket?.seatName === seat;
-              const seatIsScanned = isThisSeatSelected && isSelectedSeatScanned;
-
+              const seatIsScanned =  scannedSeats.includes(seat); 
               let seatClass = `w-12 h-12 rounded flex items-center justify-center font-bold cursor-pointer `;
 
               if (!isBooked) {

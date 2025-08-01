@@ -5,7 +5,8 @@ import roomReducer from '../containers/Room/reducer';
 import seatReducer from '../containers/SeatMap/reducer';
 import showtimeReducer from '../containers/Showtime/reducer';
 import seatManagementReducer from '../containers/SeatManagement/reducer';
-
+import profileReducer from '../containers/Profile/reducer';
+import reportReducer from '../containers/Report/reducer';
 
 const rootReducer = combineReducers({
   movie: movieReducer,
@@ -13,7 +14,9 @@ const rootReducer = combineReducers({
   room: roomReducer,
   seat: seatReducer,
   showtime: showtimeReducer,
-  seatManagement: seatManagementReducer
+  seatManagement: seatManagementReducer,
+  profile: profileReducer,
+  report: reportReducer
 });
 
 export default rootReducer;

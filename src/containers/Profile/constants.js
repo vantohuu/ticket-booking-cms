@@ -1,0 +1,10 @@
+export const FETCH_PROFILE = 'profile/FETCH_PROFILE';
+export const UPDATE_PROFILE = 'profile/UPDATE_PROFILE';
+export const SET_PROFILE = 'profile/SET_PROFILE';
+export const SHOW_BEGIN_EDIT_MODAL = 'profile/SHOW_BEGIN_EDIT_MODAL';
+export const SHOW_END_EDIT_MODAL = 'profile/SHOW_END_EDIT_MODAL';
+export const SET_BEGIN_LOADING_STATUS = 'profile/SET_BEGIN_LOADING_STATUS';
+export const SET_END_LOADING_STATUS = 'profile/SET_END_LOADING_STATUS';
+export const SET_FAILED_MESSAGE = 'profile/SET_FAILED_MESSAGE';
+export const SET_SUCCESS_MESSAGE = 'profile/SET_SUCCESS_MESSAGE';
+export const CLEAR_MESSAGES = 'profile/CLEAR_MESSAGES';

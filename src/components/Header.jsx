@@ -1,16 +1,23 @@
 import React from 'react';
 import { Button, Avatar, Dropdown, Menu, Typography } from 'antd';
 import { MenuOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
 const AppHeader = ({ onToggleDrawer }) => {
+  const navigate = useNavigate();
+
+  const handleMenuClick = (e) => {
+    navigate(e.key);
+  };
+
   const menu = (
-    <Menu>
-      <Menu.Item key="profile" icon={<UserOutlined />}>
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="/profile" icon={<UserOutlined />}>
         Hồ sơ cá nhân
       </Menu.Item>
-      <Menu.Item key="logout" icon={<LogoutOutlined />}>
+      <Menu.Item key="/login" icon={<LogoutOutlined />}>
         Đăng xuất
       </Menu.Item>
     </Menu>

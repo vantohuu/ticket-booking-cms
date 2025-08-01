@@ -10,6 +10,9 @@ import NotFoundPage from "../src/containers/NotFound/index";
 import PrivateRoute from "../src/components/PrivateRoute";
 import SeatManagementPage from "./containers/SeatManagement/Loadable";
 import QRPage from "./containers/QR/index";
+import ProfilePage from "./containers/Profile/Loadable";
+import ReportPage from "./containers/Report/Loadable";
+
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +29,8 @@ function App() {
           <Route path="/seat-map" element={<SeatMapPage />} />
           <Route path="/showtime" element={<ShowtimePage />} />
           <Route path="/seat-management" element={<SeatManagementPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/reports" element={<ReportPage />} />
         </Route>
 
         {/* 404 fallback */}

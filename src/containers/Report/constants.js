@@ -1,0 +1,12 @@
+export const FETCH_REPORT = 'report/FETCH_REPORT';
+export const CLEAR_REPORT = 'report/CLEAR_REPORT';
+export const FETCH_REPORT_BY_MOVIE = 'report/FETCH_REPORT_BY_MOVIE';
+export const FETCH_REPORT_BY_CINEMA = 'report/FETCH_REPORT_BY_CINEMA';
+export const SET_REPORT = 'report/SET_REPORT';
+export const SHOW_BEGIN_EDIT_MODAL = 'report/SHOW_BEGIN_EDIT_MODAL';
+export const SHOW_END_EDIT_MODAL = 'report/SHOW_END_EDIT_MODAL';
+export const SET_BEGIN_LOADING_STATUS = 'report/SET_BEGIN_LOADING_STATUS';
+export const SET_END_LOADING_STATUS = 'report/SET_END_LOADING_STATUS';
+export const SET_FAILED_MESSAGE = 'report/SET_FAILED_MESSAGE';
+export const SET_SUCCESS_MESSAGE = 'report/SET_SUCCESS_MESSAGE';
+export const CLEAR_MESSAGES = 'report/CLEAR_MESSAGES';

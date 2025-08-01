@@ -66,9 +66,6 @@ function PageLayout({ children }) {
           <Menu.Item key="/reports" icon={<BarChartOutlined />}>
             Thống kê báo cáo
           </Menu.Item>
-          <Menu.Item key="/account-management" icon={<IdcardOutlined />}>
-            Quản lí tài khoản
-          </Menu.Item>
         </Menu>
       </Drawer>
       <Content className="p-6 m-6 bg-white rounded shadow">{children}</Content>
