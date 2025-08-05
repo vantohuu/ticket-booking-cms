@@ -3,6 +3,7 @@ import * as types from "./constants";
 const initialState = {
   seats: [],
   tickets : [],
+  ticket: null,
   avaiableSeats: [],
   showtime: null,
   invoice : null,
@@ -17,6 +18,8 @@ const seatManagementReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_SEATS:
       return { ...state, seats: action.payload };
+    case types.SET_TICKET:
+      return { ...state, ticket: action.payload };
     case types.SET_SHOWTIME:
       return { ...state, showtime: action.payload };
     case types.SET_TICKETS:

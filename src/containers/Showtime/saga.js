@@ -10,7 +10,7 @@ import * as movieApi from '../../api/movieApi';
 function* fetchCinemasSaga() {
   try {
     const res = yield call(cinemaApi.getCinemas);
-    yield put(actions.setCinemas(res.data && res.data.result ? res.data.result : []));
+    yield put(actions.setCinemas(res.data && res.data.result.content ? res.data.result.content : []));
   } catch (error) {
     console.error('Fetch cinemas failed', error);
     yield put(actions.setFailedMessage('Fetch cinemas failed'));
@@ -32,7 +32,7 @@ function* fetchRoomsByCinemaSaga(action) {
 function* fetchMoviesSaga() {
   try {
     const res = yield call(movieApi.getMovies);
-    yield put(actions.setMovies(res.data && res.data.result ? res.data.result : []));
+    yield put(actions.setMovies(res.data && res.data.result.content ? res.data.result.content : []));
   } catch (error) {
     console.error('Fetch movies failed', error);
     yield put(actions.setFailedMessage('Fetch movies failed'));
@@ -43,7 +43,7 @@ function* fetchShowtimesSaga() {
   try {
     yield put(actions.setBeginLoadingStatus());
     const res = yield call(api.getShowtimes);
-    yield put(actions.setShowtimes(res.data && res.data.result ? res.data.result : []));
+    yield put(actions.setShowtimes(res.data && res.data.result.content ? res.data.result.content : []));
     yield put(actions.setEndLoadingStatus());
   } catch (error) {
     console.error('Fetch showtimes failed', error);

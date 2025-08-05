@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useZxing } from "react-zxing";
 import { Button, message } from "antd";
-import axios from "axios";
 import { scanTicket } from "../api/ticketApi";
 
 const QRScanner = () => {
@@ -16,7 +15,7 @@ const QRScanner = () => {
         const parsed = JSON.parse(result.getText());
         setScannedData(parsed);
       } catch {
-        setScannedData({ raw: result.getText() });
+        setScannedData({ qrCode: result.getText() });
       }
       setScanning(false);
     },

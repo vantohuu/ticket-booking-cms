@@ -1,6 +1,7 @@
 export const FETCH_AVAIABLE_SEATS_BY_SHOWTIME = 'ticket/FETCH_AVAIABLE_SEATS_BY_SHOWTIME';
 export const FETCH_SEATS_BY_ROOM = 'ticket/FETCH_SEATS_BY_ROOM';
 export const FETCH_INVOICE = 'ticket/FETCH_INVOICE';
+export const FETCH_TICKET_BY_ID = 'ticket/FETCH_TICKET_BY_ID';
 export const FETCH_SHOWTIME_BY_ID = 'ticket/FETCH_SHOWTIME_BY_ID';
 export const FETCH_USER = 'ticket/FETCH_USER';
 export const FETCH_BOOKED_TICKETS = 'ticket/FETCH_BOOKED_TICKETS';
@@ -10,6 +11,7 @@ export const DELETE_SEAT = 'ticket/DELETE_SEAT';
 export const SET_SEATS = 'ticket/SET_SEATS';
 export const SET_SHOWTIME = 'ticket/SET_SHOWTIME';
 export const SET_TICKETS = 'ticket/SET_TICKETS';
+export const SET_TICKET = 'ticket/SET_TICKET';
 export const SET_INVOICE = 'ticket/SET_INVOICE';
 export const SET_USER = 'ticket/SET_USER';
 export const SET_AVAIABLE_SEATS = 'ticket/SET_AVAIALBE_SEATS';

@@ -10,7 +10,7 @@ function* fetchMoviesSaga() {
   try {
     yield put(actions.setBeginLoadingStatus());
     const res = yield call(api.getMovies);
-    yield put(actions.setMovies(res.data && res.data.result ? res.data.result : []));
+    yield put(actions.setMovies(res.data && res.data.result.content ? res.data.result.content : []));
     yield put(actions.setEndLoadingStatus());
   } catch (error) {
     console.error('Fetch movies failed', error);

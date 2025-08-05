@@ -127,6 +127,7 @@ useEffect(() => {
 
   if (isLoading) return <Loading />;
 
+  console.log("Cinemas:", cinemas);
   return (
     <PageLayout>
       <div>

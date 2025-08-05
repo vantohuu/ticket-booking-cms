@@ -43,6 +43,9 @@ const SeatMap = ({
             <strong>Showtime ID:</strong> {showtime.id}
           </p>
           <p>
+            <strong>#Ticket:</strong> {selectedTicket.id}
+          </p>
+          <p>
             <strong>Thời gian bắt đầu chiếu:</strong>{" "}
             {dayjs(showtime.startTime).format("DD/MM/YYYY HH:mm:ss")}
           </p>

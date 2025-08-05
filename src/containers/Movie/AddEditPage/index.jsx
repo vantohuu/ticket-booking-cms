@@ -52,8 +52,6 @@ const AddEditMovie = ({ type = "create", movie }) => {
           poster: movie.poster || "",
           trailer: movie.trailer || "",
           releaseDate: movie.releaseDate ? dayjs(movie.releaseDate) : null,
-          endDate: movie.endDate ? dayjs(movie.endDate) : null,
-          status: movie.status || "",
           genreIds: movie.genres?.map((g) => g.id) || [],
           actorIds: movie.actors?.map((a) => a.id) || [],
         });
@@ -123,26 +121,6 @@ const AddEditMovie = ({ type = "create", movie }) => {
           rules={[{ required: true, message: "Vui lòng chọn ngày phát hành!" }]}
         >
           <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          label="Ngày kết thúc chiếu"
-          name="endDate"
-          rules={[{ required: true, message: "Vui lòng chọn ngày kết thúc!" }]}
-        >
-          <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          label="Trạng thái"
-          name="status"
-          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-        >
-          <Select placeholder="Chọn trạng thái">
-            <Option value="NOW_SHOWING">Đang chiếu</Option>
-            <Option value="ENDED">Ngừng chiếu</Option>
-            <Option value="COMING_SOON">Sắp chiếu</Option>
-          </Select>
         </Form.Item>
         <Form.Item
           label="Thể loại phim"

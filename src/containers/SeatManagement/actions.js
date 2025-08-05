@@ -8,6 +8,7 @@ export const fetchUser = (username) => ({ type: types.FETCH_USER, payload: usern
 export const fetchBookedTickets = (showtimeId) => ({ type: types.FETCH_BOOKED_TICKETS, payload: showtimeId });
 export const setSeats = (seats) => ({ type: types.SET_SEATS, payload: seats });
 export const setTickets = (tickets) => ({ type: types.SET_TICKETS, payload: tickets });
+export const setTicket = (ticket) => ({ type: types.SET_TICKET, payload: ticket });
 export const setInvoice = (invoice) => ({ type: types.SET_INVOICE, payload: invoice });
 export const setShowtime = (showtime) => ({ type: types.SET_SHOWTIME, payload: showtime });
 export const setUser = (user) => ({ type: types.SET_USER, payload: user });

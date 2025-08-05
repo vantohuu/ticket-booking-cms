@@ -53,7 +53,6 @@ const SeatManagement = () => {
 
   const arraySeats = useMemo(() => convertSeatsTo2DArray(seats), [seats]);
 
-
   const arrayBookedSeats = useMemo(
     () => convertTicketsTo1DSeatArray(bookedTickets),
     [bookedTickets]
