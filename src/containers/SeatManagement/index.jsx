@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input, Button, message, Select } from "antd";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import utc from 'dayjs/plugin/utc';
 import {
   fetchShowtimes,
   fetchShowtimeById,
@@ -34,6 +33,8 @@ import {
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 const SeatManagement = () => {
+  dayjs.extend(utc);
+
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(null);
   const [searchParams] = useSearchParams();
@@ -131,10 +132,10 @@ const SeatManagement = () => {
   };
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(dayjs(date).utc(true));
     setSelectedShowtimeId(null);
     if (selectedRoomId && date) {
-      dispatch(fetchShowtimes({ startTime: date, roomId: selectedRoomId }));
+      dispatch(fetchShowtimes({ startTime: dayjs(date).utc(true), roomId: selectedRoomId }));
     }
   };
 
@@ -180,7 +181,6 @@ const SeatManagement = () => {
               value={selectedDate}
               onChange={handleDateChange}
               allowClear
-              timezone="Asia/Ho_Chi_Minh"
               format="DD-MM-YYYY"
               disabled={!selectedRoomId}
               placeholder="Chọn ngày chiếu"
