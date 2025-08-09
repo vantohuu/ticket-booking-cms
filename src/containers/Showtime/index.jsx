@@ -112,11 +112,22 @@ const ShowtimeList = () => {
       render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm:ss"),
     },
     {
+      title: "Thời gian kết thúc",
+      dataIndex: "endTime",
+      key: "endTime",
+      sorter: (a, b) =>
+        new Date(a.endTime).getTime() - new Date(b.endTime).getTime(),
+      width: "10%",
+      render: (text) => dayjs(text).format("DD/MM/YYYY HH:mm:ss"),
+    },
+    {
       title: "Giá vé",
       dataIndex: "ticketPrice",
       key: "ticketPrice",
       sorter: (a, b) => a.ticketPrice - b.ticketPrice,
       width: "10%",
+      render: (value) =>
+        value?.toLocaleString("vi-VN", { style: "currency", currency: "VND" }),
     },
     {
       title: "Quản lí vé",

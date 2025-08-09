@@ -2,6 +2,7 @@ import * as types from './constants';
 
 const initialState = {
   movies: [],
+  showtimes: [],
   showEditModal: false,
   loading: false
 };
@@ -14,6 +15,8 @@ switch (action.type) {
       return { ...state, actors: action.payload };
     case types.SET_GENRES:
       return { ...state, genres: action.payload };
+    case types.SET_SHOWTIMES:
+      return { ...state, showtimes: action.payload };
     case types.SHOW_BEGIN_EDIT_MODAL:
       return { ...state, showEditModal: true };
     case types.SHOW_END_EDIT_MODAL:

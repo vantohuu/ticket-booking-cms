@@ -4,13 +4,14 @@ import * as actions from './actions';
 import * as api from '../../api/movieApi'; 
 import * as actorApi from '../../api/actorApi'; 
 import * as genreApi from '../../api/genreApi'; 
+import * as showtimeApi from '../../api/showtimeApi';
 
 
 function* fetchMoviesSaga() {
   try {
     yield put(actions.setBeginLoadingStatus());
     const res = yield call(api.getMovies);
-    yield put(actions.setMovies(res.data && res.data.result.content ? res.data.result.content : []));
+    yield put(actions.setMovies(res.data && res.data.result ? res.data.result : []));
     yield put(actions.setEndLoadingStatus());
   } catch (error) {
     console.error('Fetch movies failed', error);
@@ -37,6 +38,16 @@ function* fetchGenresSaga() {
   } catch (error) {
     console.error('Fetch genres failed', error);
     yield put(actions.setFailedMessage('Fetch genres failed'));
+  }
+}
+
+function* fetchShowtimesSaga(action) {
+  try {
+    const res = yield call(showtimeApi.getShowtimesByMovie, action.payload);
+    yield put(actions.setShowtimes(res.data && res.data.result ? res.data.result : []));
+  } catch (error) {
+    console.error('Fetch showtimes failed', error);
+    yield put(actions.setFailedMessage('Fetch showtimes failed'));
   }
 }
 
@@ -113,4 +124,5 @@ export default function* movieSaga() {
   yield takeLatest(types.CREATE_MOVIE, createMovieSaga);
   yield takeLatest(types.UPDATE_MOVIE, updateMovieSaga);
   yield takeLatest(types.DELETE_MOVIE, deleteMovieSaga);
+  yield takeLatest(types.FETCH_SHOWTIMES, fetchShowtimesSaga);
 };

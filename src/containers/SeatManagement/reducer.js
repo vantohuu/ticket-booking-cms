@@ -1,9 +1,13 @@
+import { getShowtimes } from "../../api/showtimeApi";
 import * as types from "./constants";
 
 const initialState = {
   seats: [],
   tickets : [],
   ticket: null,
+  rooms: [],
+  showtimes: [],
+  cinemas: [],
   avaiableSeats: [],
   showtime: null,
   invoice : null,
@@ -22,6 +26,12 @@ const seatManagementReducer = (state = initialState, action) => {
       return { ...state, ticket: action.payload };
     case types.SET_SHOWTIME:
       return { ...state, showtime: action.payload };
+    case types.SET_CINEMAS:
+      return { ...state, cinemas: action.payload };
+    case types.SET_ROOMS:
+      return { ...state, rooms: action.payload };
+    case types.SET_SHOWTIMES:
+      return { ...state, showtimes: action.payload };
     case types.SET_TICKETS:
       return { ...state, tickets: action.payload };
     case types.SET_INVOICE:

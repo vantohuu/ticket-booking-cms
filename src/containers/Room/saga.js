@@ -20,7 +20,7 @@ function* fetchRoomsSaga() {
 function* fetchCinemasSaga() {
   try {
     const res = yield call(cinemaApi.getCinemas);
-    yield put(actions.setCinemas(res.data && res.data.result.content ? res.data.result.content : []));
+    yield put(actions.setCinemas(res.data && res.data.result ? res.data.result : []));
   } catch (error) {
     console.error('Fetch cinemas failed', error);
     yield put(actions.setFailedMessage('Fetch cinemas failed'));

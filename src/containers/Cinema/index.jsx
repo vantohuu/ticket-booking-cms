@@ -17,7 +17,7 @@ import PageLayout from "../../layouts/PageLayout";
 import AddEditCinema from "./AddEditPage";
 import Loading from "../../components/Loading";
 
-const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3000/";
+const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3001/";
 
 const CinemaList = () => {
   const dispatch = useDispatch();

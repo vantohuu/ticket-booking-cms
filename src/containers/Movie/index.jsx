@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Input, message } from "antd";
+import dayjs from "dayjs";
 import {
   fetchMovies,
   fetchActors,
   fetchGenres,
   showBeginEditModal,
   deleteMovie,
+  fetchShowtimes,
   clearMessages,
 } from "./actions";
 import {
@@ -18,7 +20,7 @@ import {
 import PageLayout from "../../layouts/PageLayout";
 import AddEditMovie from "./AddEditPage";
 import Loading from "../../components/Loading";
-
+import ShowtimesModal from "../../components/ShowtimesModal";
 
 const MovieList = () => {
   const dispatch = useDispatch();
@@ -29,6 +31,7 @@ const MovieList = () => {
   const errorText = useSelector(selectFailedMessage);
   const movies = useSelector(selectMovies) || [];
   const isLoading = useSelector(selectIsLoading);
+  const [showShowtimesModal, setShowShowtimesModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchMovies());
@@ -64,6 +67,11 @@ const MovieList = () => {
 
   const handleDeleteClick = (movie) => {
     dispatch(deleteMovie(movie.id));
+  };
+
+  const handleShowtimesClick = (movie) => {
+    dispatch(fetchShowtimes(movie.id));
+    setShowShowtimesModal(true);
   };
 
   const columns = [
@@ -115,8 +123,8 @@ const MovieList = () => {
       title: "Ngày phát hành",
       dataIndex: "releaseDate",
       key: "releaseDate",
-      width: "10%",
-      render: (date) => (date ? new Date(date).toLocaleDateString() : ""),
+      width: "10%",     
+      render: (date) => (date ?  dayjs(date).format("DD/MM/YYYY") : ""),
     },
     {
       title: "Thể loại",
@@ -135,7 +143,15 @@ const MovieList = () => {
         actors?.length > 0
           ? actors.map((a) => `${a.firstName} ${a.lastName}`).join(", ")
           : "Không có",
-    }, 
+    },
+    {
+      title: "Lịch chiếu",
+      key: "showtimes",
+      width: "10%",
+      render: (_, movie) => (
+        <Button onClick={() => handleShowtimesClick(movie)}>Lịch chiếu</Button>
+      ),
+    },
     {
       title: "Sửa",
       key: "edit",
@@ -176,6 +192,10 @@ const MovieList = () => {
 
         <Table bordered columns={columns} dataSource={movies} rowKey="id" />
         <AddEditMovie type={modalType} movie={selectedMovie} />
+        <ShowtimesModal
+          visible={showShowtimesModal}
+          onClose={() => setShowShowtimesModal(false)}
+        />
       </div>
     </PageLayout>
   );
