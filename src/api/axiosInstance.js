@@ -1,21 +1,39 @@
 // api/axiosInstance.js
 import axios from 'axios';
-import { getAccessToken } from '../utils/tokenUtils';
+import { getAccessToken, clearTokens } from '../utils/tokenUtils';
 import { refreshAccessToken } from './authService';
+import jwtDecode from 'jwt-decode'; // cần cài: npm install jwt-decode
+import { message } from 'antd';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/'; 
-const API_TIMEOUT = process.env.REACT_APP_API_TIMEOUT || 10000; 
-
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/';
+const API_TIMEOUT = process.env.REACT_APP_API_TIMEOUT || 10000;
 
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: API_TIMEOUT
 });
-// Gắn access token vào mỗi request
+
+// Gắn access token vào mỗi request và kiểm tra ROLE_MANAGER
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const decoded = jwtDecode(token);
+
+      // Kiểm tra scope/role trong JWT
+      if (!decoded.scope?.includes("ROLE_MANAGER")) {
+        clearTokens(); // xóa token cũ
+        window.location.href = "/login";
+        return Promise.reject("Không có quyền ROLE_MANAGER");
+      }
+
+      config.headers.Authorization = `Bearer ${token}`;
+    } catch (err) {
+      console.error("JWT decode error:", err);
+      clearTokens();
+      window.location.href = "/login";
+      return Promise.reject(err);
+    }
   }
   return config;
 });
@@ -26,23 +44,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Nếu lỗi 401 và chưa retry thì thử refresh token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
       const newAccessToken = await refreshAccessToken();
       if (newAccessToken) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest); // Retry request với token mới
+        return api(originalRequest);
       }
     }
-
     return Promise.reject(error);
   }
 );
 
-
-// Interceptor cho request
+// Debug request
 api.interceptors.request.use(
   (config) => {
     console.log('🚀 Request:', {
@@ -59,7 +73,7 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor cho response
+// Debug response
 api.interceptors.response.use(
   (response) => {
     console.log('✅ Response:', {
@@ -78,6 +92,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 export default api;
