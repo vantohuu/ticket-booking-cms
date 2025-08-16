@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message } from "antd"
+import { Table, Button, Input, message, Modal } from "antd"
 import { fetchCinemas, showBeginEditModal, deleteCinema, clearMessages } from "./actions"
 import {
   selectCinemas,
@@ -61,7 +61,16 @@ const CinemaList = () => {
   }
 
   const handleDeleteClick = (cinema) => {
-    dispatch(deleteCinema(cinema.id, { currentPage: currentPage - 1 }))
+    Modal.confirm({
+      title: "Xác nhận xóa rạp chiếu phim",
+      content: `Bạn có chắc chắn muốn xóa rạp "${cinema.name}"? Hành động này sẽ xóa tất cả phòng chiếu và dữ liệu liên quan. Hành động này không thể hoàn tác.`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        dispatch(deleteCinema(cinema.id, { currentPage: currentPage - 1 }))
+      },
+    })
   }
 
   const handleTableChange = (paginationInfo) => {

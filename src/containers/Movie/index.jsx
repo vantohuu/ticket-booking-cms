@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message } from "antd"
+import { Table, Button, Input, message, Modal } from "antd"
 import dayjs from "dayjs"
 import {
   fetchMovies,
@@ -66,7 +66,16 @@ const MovieList = () => {
   }
 
   const handleDeleteClick = (movie) => {
-    dispatch(deleteMovie(movie.id, { currentPage: currentPage - 1 }))
+    Modal.confirm({
+      title: "Xác nhận xóa phim",
+      content: `Bạn có chắc chắn muốn xóa phim "${movie.title}"? Hành động này không thể hoàn tác.`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        dispatch(deleteMovie(movie.id, { currentPage: currentPage - 1 }))
+      },
+    })
   }
 
   const handleShowtimesClick = (movie) => {

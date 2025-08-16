@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message, Select } from "antd"
+import { Table, Button, Input, message, Select, Modal } from "antd"
 import { useSearchParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import { fetchRooms, fetchCinemas, showBeginEditModal, deleteRoom, clearMessages } from "./actions"
@@ -73,7 +73,17 @@ const RoomList = () => {
   }
 
   const handleDeleteClick = (room) => {
-    dispatch(deleteRoom(room.id))
+    const cinemaName = cinemaIdToName[room.cinemaId] || "Không rõ"
+    Modal.confirm({
+      title: "Xác nhận xóa phòng chiếu",
+      content: `Bạn có chắc chắn muốn xóa phòng "${room.name}" tại rạp "${cinemaName}"? Hành động này không thể hoàn tác.`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        dispatch(deleteRoom(room.id))
+      },
+    })
   }
 
   const handleCinemaChange = (value) => {

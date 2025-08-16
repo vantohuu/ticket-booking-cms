@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message } from "antd"
+import { Table, Button, Input, message, Modal } from "antd"
 import dayjs from "dayjs"
 import { fetchShowtimes, fetchCinemas, fetchMovies, deleteShowtime, showBeginEditModal, clearMessages } from "./actions"
 import {
@@ -65,7 +65,18 @@ const ShowtimeList = () => {
   }
 
   const handleDeleteClick = (showtime) => {
-    dispatch(deleteShowtime(showtime.id, { currentPage: currentPage - 1 }))
+    const movieTitle = showtime.movie?.title || "N/A"
+    const startTime = dayjs(showtime.startTime).format("DD/MM/YYYY HH:mm")
+    Modal.confirm({
+      title: "Xác nhận xóa suất chiếu",
+      content: `Bạn có chắc chắn muốn xóa suất chiếu phim "${movieTitle}" lúc ${startTime}? Hành động này sẽ xóa tất cả vé đã đặt cho suất chiếu này. Hành động này không thể hoàn tác.`,
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk() {
+        dispatch(deleteShowtime(showtime.id, { currentPage: currentPage - 1 }))
+      },
+    })
   }
 
   const handleTableChange = (paginationInfo) => {
