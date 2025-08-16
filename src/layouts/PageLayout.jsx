@@ -7,7 +7,6 @@ import {
   TableOutlined,
   ClockCircleOutlined,
   BarChartOutlined,
-  IdcardOutlined,
   ScanOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";

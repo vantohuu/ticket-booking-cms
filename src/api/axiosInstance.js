@@ -1,9 +1,7 @@
-// api/axiosInstance.js
 import axios from 'axios';
 import { getAccessToken, clearTokens } from '../utils/tokenUtils';
 import { refreshAccessToken } from './authService';
-import jwtDecode from 'jwt-decode'; // cần cài: npm install jwt-decode
-import { message } from 'antd';
+import {jwtDecode} from 'jwt-decode'; 
 
 const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/';
 const API_TIMEOUT = process.env.REACT_APP_API_TIMEOUT || 10000;
@@ -20,9 +18,8 @@ api.interceptors.request.use((config) => {
     try {
       const decoded = jwtDecode(token);
 
-      // Kiểm tra scope/role trong JWT
       if (!decoded.scope?.includes("ROLE_MANAGER")) {
-        clearTokens(); // xóa token cũ
+        clearTokens(); 
         window.location.href = "/login";
         return Promise.reject("Không có quyền ROLE_MANAGER");
       }
@@ -38,7 +35,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Xử lý token hết hạn tự động
 api.interceptors.response.use(
   response => response,
   async (error) => {
@@ -56,7 +52,6 @@ api.interceptors.response.use(
   }
 );
 
-// Debug request
 api.interceptors.request.use(
   (config) => {
     console.log('🚀 Request:', {
