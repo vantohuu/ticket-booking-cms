@@ -1,50 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Button, DatePicker, Select } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-import {
-  createMovie,
-  updateMovie,
-  showEndEditModal,
-} from "../actions";
-import {
-  selectIsShowEditModal,
-  selectActors,
-  selectGenres,
-} from "../selectors";
-const { Option } = Select;
+"use client"
 
-const AddEditMovie = ({ type = "create", movie }) => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch();
-  const isModalVisible = useSelector(selectIsShowEditModal);
-  const actors = useSelector(selectActors);
-  const genres = useSelector(selectGenres);
-  dayjs.extend(utc);
+import { useEffect } from "react"
+import { Modal, Form, Input, Button, DatePicker, Select } from "antd"
+import { useDispatch, useSelector } from "react-redux"
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import { createMovie, updateMovie, showEndEditModal } from "../actions"
+import { selectIsShowEditModal, selectActors, selectGenres } from "../selectors"
+const { Option } = Select
+
+const AddEditMovie = ({ type = "create", movie, currentPage }) => {
+  const [form] = Form.useForm()
+  const dispatch = useDispatch()
+  const isModalVisible = useSelector(selectIsShowEditModal)
+  const actors = useSelector(selectActors)
+  const genres = useSelector(selectGenres)
+  dayjs.extend(utc)
   const handleSubmit = (values) => {
     const payload = {
       ...values,
       releaseDate: dayjs(values.releaseDate).utc(true),
-    };
-
-    if (type === "edit" && movie?.id) {
-      dispatch(updateMovie({ ...payload, id: movie.id }));
-    } else {
-      dispatch(createMovie(payload));
-      form.resetFields(); // Chỉ reset khi thêm mới
     }
 
-    dispatch(showEndEditModal());
-  };
+    if (type === "edit" && movie?.id) {
+      dispatch(updateMovie({ ...payload, id: movie.id }, currentPage))
+    } else {
+      dispatch(createMovie(payload))
+      form.resetFields() // Chỉ reset khi thêm mới
+    }
+
+    dispatch(showEndEditModal())
+  }
 
   const handleCancel = () => {
-    dispatch(showEndEditModal());
-  };
+    dispatch(showEndEditModal())
+  }
 
   useEffect(() => {
     if (isModalVisible) {
-      console.log("Movie data in modal:", movie);
+      console.log("Movie data in modal:", movie)
       if (movie) {
         form.setFieldsValue({
           title: movie.title || "",
@@ -56,12 +50,12 @@ const AddEditMovie = ({ type = "create", movie }) => {
           releaseDate: movie.releaseDate ? dayjs(movie.releaseDate) : null,
           genreIds: movie.genres?.map((g) => g.id) || [],
           actorIds: movie.actors?.map((a) => a.id) || [],
-        });
+        })
       } else {
-        form.resetFields();
+        form.resetFields()
       }
     }
-  }, [movie, isModalVisible, form]);
+  }, [movie, isModalVisible, form])
 
   return (
     <Modal
@@ -71,19 +65,11 @@ const AddEditMovie = ({ type = "create", movie }) => {
       footer={null}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Tên phim"
-          name="title"
-          rules={[{ required: true, message: "Vui lòng nhập tên phim!" }]}
-        >
+        <Form.Item label="Tên phim" name="title" rules={[{ required: true, message: "Vui lòng nhập tên phim!" }]}>
           <Input placeholder="Tên phim" />
         </Form.Item>
 
-        <Form.Item
-          label="Mô tả"
-          name="description"
-          rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
-        >
+        <Form.Item label="Mô tả" name="description" rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}>
           <Input.TextArea rows={3} placeholder="Mô tả phim" />
         </Form.Item>
 
@@ -94,19 +80,11 @@ const AddEditMovie = ({ type = "create", movie }) => {
         >
           <Input type="number" placeholder="Thời lượng" />
         </Form.Item>
-        <Form.Item
-          label="Ngôn ngữ"
-          name="language"
-          rules={[{ required: true, message: "Vui lòng nhập ngôn ngữ!" }]}
-        >
+        <Form.Item label="Ngôn ngữ" name="language" rules={[{ required: true, message: "Vui lòng nhập ngôn ngữ!" }]}>
           <Input placeholder="Ngôn ngữ" />
         </Form.Item>
 
-        <Form.Item
-          label="Poster URL"
-          name="poster"
-          rules={[{ required: true, message: "Vui lòng nhập link poster!" }]}
-        >
+        <Form.Item label="Poster URL" name="poster" rules={[{ required: true, message: "Vui lòng nhập link poster!" }]}>
           <Input placeholder="Link poster" />
         </Form.Item>
 
@@ -129,12 +107,7 @@ const AddEditMovie = ({ type = "create", movie }) => {
           name="genreIds"
           rules={[{ required: true, message: "Vui lòng chọn thể loại!" }]}
         >
-          <Select
-            mode="multiple"
-            placeholder="Chọn thể loại"
-            allowClear
-            optionFilterProp="children"
-          >
+          <Select mode="multiple" placeholder="Chọn thể loại" allowClear optionFilterProp="children">
             {genres.map((genre) => (
               <Option key={genre.id} value={genre.id}>
                 {genre.name}
@@ -143,17 +116,8 @@ const AddEditMovie = ({ type = "create", movie }) => {
           </Select>
         </Form.Item>
 
-        <Form.Item
-          label="Diễn viên"
-          name="actorIds"
-          rules={[{ required: true, message: "Vui lòng chọn diễn viên!" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Chọn diễn viên"
-            allowClear
-            optionFilterProp="children"
-          >
+        <Form.Item label="Diễn viên" name="actorIds" rules={[{ required: true, message: "Vui lòng chọn diễn viên!" }]}>
+          <Select mode="multiple" placeholder="Chọn diễn viên" allowClear optionFilterProp="children">
             {actors.map((actor) => (
               <Option key={actor.id} value={actor.id}>
                 {actor.firstName + " " + actor.lastName}
@@ -172,7 +136,7 @@ const AddEditMovie = ({ type = "create", movie }) => {
         </Form.Item>
       </Form>
     </Modal>
-  );
-};
+  )
+}
 
-export default AddEditMovie;
+export default AddEditMovie

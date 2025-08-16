@@ -68,7 +68,7 @@ const CinemaList = () => {
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
-        dispatch(deleteCinema(cinema.id, { currentPage: currentPage - 1 }))
+        dispatch(deleteCinema(cinema.id, currentPage - 1))
       },
     })
   }
@@ -173,7 +173,7 @@ const CinemaList = () => {
           }}
           onChange={handleTableChange}
         />
-        <AddEditCinema type={modalType} cinema={selectedCinema} />
+        <AddEditCinema type={modalType} cinema={selectedCinema} currentPage={currentPage - 1} />
       </div>
     </PageLayout>
   )

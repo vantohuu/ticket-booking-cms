@@ -1,37 +1,39 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Button, InputNumber, Select } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { createRoom, updateRoom, showEndEditModal } from "../actions";
-import { selectIsShowEditModal, selectCinemas } from "../selectors";
+"use client"
 
-const { Option } = Select;
+import { useEffect } from "react"
+import { Modal, Form, Input, Button, InputNumber, Select } from "antd"
+import { useDispatch, useSelector } from "react-redux"
+import { createRoom, updateRoom, showEndEditModal } from "../actions"
+import { selectIsShowEditModal, selectCinemas } from "../selectors"
 
-const AddEditRoom = ({ type = "create", room }) => {
-  const [form] = Form.useForm();
-  const dispatch = useDispatch();
-  const isModalVisible = useSelector(selectIsShowEditModal);
-  const cinemas = useSelector(selectCinemas) || [];
+const { Option } = Select
+
+const AddEditRoom = ({ type = "create", room, currentPage }) => {
+  const [form] = Form.useForm()
+  const dispatch = useDispatch()
+  const isModalVisible = useSelector(selectIsShowEditModal)
+  const cinemas = useSelector(selectCinemas) || []
 
   const handleSubmit = (values) => {
     const payload = {
       name: values.name,
       totalSeats: values.totalSeats,
       cinemaId: values.cinemaId,
-    };
-
-    if (type === "edit" && room?.id) {
-      dispatch(updateRoom({ ...payload, id: room.id }));
-    } else {
-      dispatch(createRoom(payload));
-      form.resetFields();
     }
 
-    dispatch(showEndEditModal());
-  };
+    if (type === "edit" && room?.id) {
+      dispatch(updateRoom({ ...payload, id: room.id }, currentPage))
+    } else {
+      dispatch(createRoom(payload))
+      form.resetFields()
+    }
+
+    dispatch(showEndEditModal())
+  }
 
   const handleCancel = () => {
-    dispatch(showEndEditModal());
-  };
+    dispatch(showEndEditModal())
+  }
 
   useEffect(() => {
     if (isModalVisible) {
@@ -40,14 +42,12 @@ const AddEditRoom = ({ type = "create", room }) => {
           name: room.name || "",
           totalSeats: room.totalSeats || null,
           cinemaId: room.cinemaId || null,
-        });
+        })
       } else {
-        form.resetFields();
+        form.resetFields()
       }
     }
-  }, [room, isModalVisible, form]);
-
-
+  }, [room, isModalVisible, form])
 
   return (
     <Modal
@@ -57,11 +57,7 @@ const AddEditRoom = ({ type = "create", room }) => {
       footer={null}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Tên phòng"
-          name="name"
-          rules={[{ required: true, message: "Vui lòng nhập tên phòng!" }]}
-        >
+        <Form.Item label="Tên phòng" name="name" rules={[{ required: true, message: "Vui lòng nhập tên phòng!" }]}>
           <Input placeholder="Tên phòng" />
         </Form.Item>
 
@@ -76,11 +72,7 @@ const AddEditRoom = ({ type = "create", room }) => {
           <InputNumber placeholder="Số ghế" style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item
-          label="Rạp chiếu"
-          name="cinemaId"
-          rules={[{ required: true, message: "Vui lòng chọn rạp!" }]}
-        >
+        <Form.Item label="Rạp chiếu" name="cinemaId" rules={[{ required: true, message: "Vui lòng chọn rạp!" }]}>
           <Select placeholder="Chọn rạp">
             {cinemas.map((cinema) => (
               <Option key={cinema.id} value={cinema.id}>
@@ -100,7 +92,7 @@ const AddEditRoom = ({ type = "create", room }) => {
         </Form.Item>
       </Form>
     </Modal>
-  );
-};
+  )
+}
 
-export default AddEditRoom;
+export default AddEditRoom

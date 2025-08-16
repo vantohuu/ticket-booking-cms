@@ -68,7 +68,8 @@ function* updateRoomSaga(action) {
     yield put(actions.setEndLoadingStatus())
     if (res.data) {
       console.log("Room updated successfully", res.data)
-      yield put(actions.fetchRooms(0, 10, "id,asc"))
+      const currentPage = action.currentPage || 0
+      yield put(actions.fetchRooms(currentPage, 10, "id,asc"))
       yield put(actions.setSuccessMessage("Room updated successfully"))
     }
   } catch (error) {
@@ -86,7 +87,8 @@ function* deleteRoomSaga(action) {
     yield put(actions.setEndLoadingStatus())
     if (res.data) {
       console.log("Room deleted successfully", res.data)
-      yield put(actions.fetchRooms(0, 10, "id,asc"))
+      const currentPage = action.currentPage || 0
+      yield put(actions.fetchRooms(currentPage, 10, "id,asc"))
       yield put(actions.setSuccessMessage("Room deleted successfully"))
     }
   } catch (error) {

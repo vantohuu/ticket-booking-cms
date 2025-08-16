@@ -2,8 +2,8 @@ import * as types from "./constants"
 
 export const fetchCinemas = (paginationParams) => ({ type: types.FETCH_CINEMAS, payload: paginationParams })
 export const createCinema = (data) => ({ type: types.CREATE_CINEMA, payload: data })
-export const updateCinema = (data) => ({ type: types.UPDATE_CINEMA, payload: data })
-export const deleteCinema = (id) => ({ type: types.DELETE_CINEMA, payload: id })
+export const updateCinema = (data, currentPage) => ({ type: types.UPDATE_CINEMA, payload: data, currentPage })
+export const deleteCinema = (id, currentPage) => ({ type: types.DELETE_CINEMA, payload: id, currentPage })
 export const setCinemas = (cinemas) => ({ type: types.SET_CINEMAS, payload: cinemas })
 export const setPagination = (pagination) => ({ type: types.SET_PAGINATION, payload: pagination })
 export const showBeginEditModal = () => ({ type: types.SHOW_BEGIN_EDIT_MODAL })

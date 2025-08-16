@@ -81,7 +81,7 @@ const RoomList = () => {
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
-        dispatch(deleteRoom(room.id))
+        dispatch(deleteRoom(room.id, currentPage))
       },
     })
   }
@@ -233,7 +233,7 @@ const RoomList = () => {
           }}
           onChange={handleTableChange}
         />
-        <AddEditRoom type={modalType} room={selectedRoom} />
+        <AddEditRoom type={modalType} room={selectedRoom} currentPage={currentPage} />
       </div>
     </PageLayout>
   )

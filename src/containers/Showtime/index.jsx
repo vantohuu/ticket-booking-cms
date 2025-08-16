@@ -74,7 +74,7 @@ const ShowtimeList = () => {
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
-        dispatch(deleteShowtime(showtime.id, { currentPage: currentPage - 1 }))
+        dispatch(deleteShowtime(showtime.id, currentPage - 1))
       },
     })
   }
@@ -193,7 +193,7 @@ const ShowtimeList = () => {
           }}
           onChange={handleTableChange}
         />
-        <AddEditShowtime type={modalType} showtime={selectedShowtime} />
+        <AddEditShowtime type={modalType} showtime={selectedShowtime} currentPage={currentPage - 1} />
       </div>
     </PageLayout>
   )

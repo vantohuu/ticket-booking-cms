@@ -73,7 +73,7 @@ const MovieList = () => {
       okType: "danger",
       cancelText: "Hủy",
       onOk() {
-        dispatch(deleteMovie(movie.id, { currentPage: currentPage - 1 }))
+        dispatch(deleteMovie(movie.id, currentPage - 1))
       },
     })
   }
@@ -213,7 +213,7 @@ const MovieList = () => {
           }}
           onChange={handleTableChange}
         />
-        <AddEditMovie type={modalType} movie={selectedMovie} />
+        <AddEditMovie type={modalType} movie={selectedMovie} currentPage={currentPage - 1} />
         <ShowtimesModal visible={showShowtimesModal} onClose={() => setShowShowtimesModal(false)} />
       </div>
     </PageLayout>
