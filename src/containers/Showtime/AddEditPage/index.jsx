@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { createShowtime, updateShowtime, showEndEditModal, fetchRoomsByCinema, fetchMovies } from "../actions"
 import { selectIsShowEditModal, selectCinemas, selectRooms, selectMovies } from "../selectors"
 import dayjs from "dayjs"
+import utc from 'dayjs/plugin/utc';
 
 const { Option } = Select
 
@@ -17,7 +18,7 @@ const AddEditShowtime = ({ type = "create", showtime }) => {
   const rooms = useSelector(selectRooms)
   const movies = useSelector(selectMovies)
   const [selectedCinemaId, setSelectedCinemaId] = useState(null)
-
+  dayjs.extend(utc);
   useEffect(() => {
     if (type === "edit" && showtime) {
       const cinemaId = showtime.room.cinemaId
@@ -46,8 +47,8 @@ const AddEditShowtime = ({ type = "create", showtime }) => {
   const handleSubmit = (values) => {
     const payload = {
       ...values,
-      startTime: values.startTime.toISOString(),
-      endTime: values.endTime ? values.endTime.toISOString() : null,
+      startTime: dayjs(values.startTime).utc(true),
+      endTime: dayjs(values.endTime).utc(true),
     }
     if (type === "create") {
       dispatch(createShowtime(payload))

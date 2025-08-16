@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Button, DatePicker, Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import {
   createMovie,
   updateMovie,
@@ -20,10 +21,11 @@ const AddEditMovie = ({ type = "create", movie }) => {
   const isModalVisible = useSelector(selectIsShowEditModal);
   const actors = useSelector(selectActors);
   const genres = useSelector(selectGenres);
-
+  dayjs.extend(utc);
   const handleSubmit = (values) => {
     const payload = {
       ...values,
+      releaseDate: dayjs(values.releaseDate).utc(true),
     };
 
     if (type === "edit" && movie?.id) {
