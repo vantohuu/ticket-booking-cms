@@ -1,129 +1,139 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Table, Button, Input, message, Select } from "antd";
-import { useSearchParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import {
-  fetchRooms,
-  fetchCinemas,
-  showBeginEditModal,
-  deleteRoom,
-  clearMessages,
-} from "./actions";
+"use client"
+
+import { useEffect, useState, useMemo } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Table, Button, Input, message, Select } from "antd"
+import { useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { fetchRooms, fetchCinemas, showBeginEditModal, deleteRoom, clearMessages } from "./actions"
 import {
   selectRooms,
   selectCinemas,
   selectIsLoading,
   selectSuccessMessage,
   selectFailedMessage,
-} from "./selectors"; // cần có selectCinemas
-import PageLayout from "../../layouts/PageLayout";
-import AddEditRoom from "./AddEditPage";
-import Loading from "../../components/Loading";
-import SeatMap from "../../components/SeatMap";
-const { Option } = Select;
-const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3000/";
+  selectPagination,
+} from "./selectors"
+import PageLayout from "../../layouts/PageLayout"
+import AddEditRoom from "./AddEditPage"
+import Loading from "../../components/Loading"
+const { Option } = Select
+const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3000/"
 
 const RoomList = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const cinemaIdFromQuery = searchParams.get("cinemaId");
-  const [modalType, setModalType] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [selectedCinemaId, setSelectedCinemaId] = useState(
-    cinemaIdFromQuery ? Number(cinemaIdFromQuery) : null
-  );
-  const rooms = useSelector(selectRooms) || [];
-  const cinemas = useSelector(selectCinemas) || []; 
-  const messageText = useSelector(selectSuccessMessage);
-  const errorText = useSelector(selectFailedMessage);
-  const isLoading = useSelector(selectIsLoading);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const cinemaIdFromQuery = searchParams.get("cinemaId")
+  const [modalType, setModalType] = useState(null)
+  const [selectedRoom, setSelectedRoom] = useState(null)
+  const [searchText, setSearchText] = useState("")
+  const [selectedCinemaId, setSelectedCinemaId] = useState(cinemaIdFromQuery ? Number(cinemaIdFromQuery) : null)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
+  const [sortField, setSortField] = useState("id")
+  const [sortOrder, setSortOrder] = useState("asc")
+
+  const rooms = useSelector(selectRooms) || []
+  const cinemas = useSelector(selectCinemas) || []
+  const messageText = useSelector(selectSuccessMessage)
+  const errorText = useSelector(selectFailedMessage)
+  const isLoading = useSelector(selectIsLoading)
+  const pagination = useSelector(selectPagination)
 
   useEffect(() => {
-    dispatch(fetchRooms());
-    dispatch(fetchCinemas());
-  }, [dispatch]);
+    dispatch(fetchRooms(currentPage, pageSize, `${sortField},${sortOrder}`))
+    dispatch(fetchCinemas())
+  }, [dispatch, currentPage, pageSize, sortField, sortOrder])
 
   useEffect(() => {
     if (messageText) {
-      message.success(messageText);
-      dispatch(clearMessages());
+      message.success(messageText)
+      dispatch(clearMessages())
     }
-  }, [messageText, dispatch]);
+  }, [messageText, dispatch])
 
   useEffect(() => {
     if (errorText) {
-      message.error(errorText);
-      dispatch(clearMessages());
+      message.error(errorText)
+      dispatch(clearMessages())
     }
-  }, [errorText, dispatch]);
+  }, [errorText, dispatch])
 
   const handleAddClick = () => {
-    setModalType("add");
-    setSelectedRoom(null);
-    dispatch(showBeginEditModal());
-  };
+    setModalType("add")
+    setSelectedRoom(null)
+    dispatch(showBeginEditModal())
+  }
 
   const handleEditClick = (room) => {
-    setModalType("edit");
-    setSelectedRoom(room);
-    dispatch(showBeginEditModal());
-  };
+    setModalType("edit")
+    setSelectedRoom(room)
+    dispatch(showBeginEditModal())
+  }
 
   const handleDeleteClick = (room) => {
-    dispatch(deleteRoom(room.id));
-  };
+    dispatch(deleteRoom(room.id))
+  }
 
   const handleCinemaChange = (value) => {
-    setSelectedCinemaId(value);
-    const params = new URLSearchParams();
+    setSelectedCinemaId(value)
+    const params = new URLSearchParams()
     if (value !== null) {
-      params.set("cinemaId", value);
+      params.set("cinemaId", value)
     }
-    navigate(`?${params.toString()}`);
-  };
+    navigate(`?${params.toString()}`)
+  }
   const cinemaIdToName = useMemo(() => {
-    const map = {};
+    const map = {}
     cinemas.forEach((cinema) => {
-      map[cinema.id] = cinema.name;
-    });
-    return map;
-  }, [cinemas]);
+      map[cinema.id] = cinema.name
+    })
+    return map
+  }, [cinemas])
 
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
-      const matchName = room.name.toLowerCase().includes(searchText);
-      const matchCinema =
-        selectedCinemaId === null || room.cinemaId === selectedCinemaId;
-      return matchName && matchCinema;
-    });
-  }, [rooms, searchText, selectedCinemaId]);
+      const matchName = room.name.toLowerCase().includes(searchText)
+      const matchCinema = selectedCinemaId === null || room.cinemaId === selectedCinemaId
+      return matchName && matchCinema
+    })
+  }, [rooms, searchText, selectedCinemaId])
+
+  const handleTableChange = (paginationInfo, filters, sorter) => {
+    if (paginationInfo) {
+      setCurrentPage(paginationInfo.current - 1)
+      setPageSize(paginationInfo.pageSize)
+    }
+
+    if (sorter && sorter.field) {
+      setSortField(sorter.field)
+      setSortOrder(sorter.order === "descend" ? "desc" : "asc")
+    }
+  }
 
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a, b) => a.id - b.id,
+      sorter: true,
       width: "10%",
     },
     {
       title: "Tên phòng",
       dataIndex: "name",
       key: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: true,
       filteredValue: searchText ? [searchText] : null,
-      onFilter: (value, record) =>
-        record.name.toLowerCase().includes(value.toLowerCase()),
+      onFilter: (value, record) => record.name.toLowerCase().includes(value.toLowerCase()),
       width: "30%",
     },
     {
       title: "Số ghế",
       dataIndex: "totalSeats",
       key: "totalSeats",
-      sorter: (a, b) => a.totalSeats - b.totalSeats,
+      sorter: true,
       width: "15%",
     },
     {
@@ -141,7 +151,7 @@ const RoomList = () => {
       key: "id",
       width: "10%",
       render: (_, room) => (
-        <a href={`${BASE_URL}seat-map?roomId=${room.id}`} target="_blank">
+        <a href={`${BASE_URL}seat-map?roomId=${room.id}`} target="_blank" rel="noreferrer">
           Xem sơ đồ ghế
         </a>
       ),
@@ -150,9 +160,7 @@ const RoomList = () => {
       title: "Sửa",
       key: "edit",
       width: "7.5%",
-      render: (_, room) => (
-        <Button onClick={() => handleEditClick(room)}>Sửa</Button>
-      ),
+      render: (_, room) => <Button onClick={() => handleEditClick(room)}>Sửa</Button>,
     },
     {
       title: "Xóa",
@@ -164,9 +172,9 @@ const RoomList = () => {
         </Button>
       ),
     },
-  ];
+  ]
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Loading />
 
   return (
     <PageLayout>
@@ -184,7 +192,7 @@ const RoomList = () => {
             onChange={handleCinemaChange}
             allowClear
             style={{ width: 200 }}
-            value={selectedCinemaId} 
+            value={selectedCinemaId}
           >
             <Option value={null}>Tất cả rạp</Option>
             {cinemas.map((cinema) => (
@@ -204,11 +212,21 @@ const RoomList = () => {
           columns={columns}
           dataSource={filteredRooms}
           rowKey="id"
+          pagination={{
+            current: (pagination?.currentPage || 0) + 1,
+            pageSize: pagination?.pageSize || 10,
+            total: pagination?.totalRecords || 0,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} phòng`,
+            pageSizeOptions: ["5", "10", "20", "50"],
+          }}
+          onChange={handleTableChange}
         />
         <AddEditRoom type={modalType} room={selectedRoom} />
       </div>
     </PageLayout>
-  );
-};
+  )
+}
 
-export default RoomList;
+export default RoomList

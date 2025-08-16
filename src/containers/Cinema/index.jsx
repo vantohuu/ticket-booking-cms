@@ -1,67 +1,73 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Table, Button, Input, message } from "antd";
-import {
-  fetchCinemas,
-  showBeginEditModal,
-  deleteCinema,
-  clearMessages,
-} from "./actions";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Table, Button, Input, message } from "antd"
+import { fetchCinemas, showBeginEditModal, deleteCinema, clearMessages } from "./actions"
 import {
   selectCinemas,
   selectIsLoading,
   selectSuccessMessage,
   selectFailedMessage,
-} from "./selectors";
-import PageLayout from "../../layouts/PageLayout";
-import AddEditCinema from "./AddEditPage";
-import Loading from "../../components/Loading";
+  selectPagination,
+} from "./selectors"
+import PageLayout from "../../layouts/PageLayout"
+import AddEditCinema from "./AddEditPage"
+import Loading from "../../components/Loading"
 
-const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3001/";
+const BASE_URL = process.env.REACT_APP_URL || "http://localhost:3001/"
 
 const CinemaList = () => {
-  const dispatch = useDispatch();
-  const [modalType, setModalType] = useState(null);
-  const [selectedCinema, setSelectedCinema] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const messageText = useSelector(selectSuccessMessage);
-  const errorText = useSelector(selectFailedMessage);
-  const cinemas = useSelector(selectCinemas) || [];
-  const isLoading = useSelector(selectIsLoading);
+  const dispatch = useDispatch()
+  const [modalType, setModalType] = useState(null)
+  const [selectedCinema, setSelectedCinema] = useState(null)
+  const [searchText, setSearchText] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const messageText = useSelector(selectSuccessMessage)
+  const errorText = useSelector(selectFailedMessage)
+  const cinemas = useSelector(selectCinemas) || []
+  const isLoading = useSelector(selectIsLoading)
+  const pagination = useSelector(selectPagination) || {}
+
   useEffect(() => {
-    dispatch(fetchCinemas());
-  }, []);
+    dispatch(fetchCinemas({ page: currentPage - 1, size: pageSize }))
+  }, [currentPage, pageSize])
 
- useEffect(() => {
-  if (messageText != null && messageText !== "") {
-    message.success(messageText);
-    dispatch(clearMessages());
-  }
-}, [messageText]);
+  useEffect(() => {
+    if (messageText != null && messageText !== "") {
+      message.success(messageText)
+      dispatch(clearMessages())
+    }
+  }, [messageText])
 
-useEffect(() => {
-  if (errorText != null && errorText !== "") {
-    message.error(errorText);
-    dispatch(clearMessages());
-  }
-}, [errorText]);
-
+  useEffect(() => {
+    if (errorText != null && errorText !== "") {
+      message.error(errorText)
+      dispatch(clearMessages())
+    }
+  }, [errorText])
 
   const handleAddClick = () => {
-    setModalType("add");
-    setSelectedCinema(null);
-    dispatch(showBeginEditModal());
-  };
+    setModalType("add")
+    setSelectedCinema(null)
+    dispatch(showBeginEditModal())
+  }
 
   const handleEditClick = (cinema) => {
-    setModalType("edit");
-    setSelectedCinema(cinema);
-    dispatch(showBeginEditModal());
-  };
+    setModalType("edit")
+    setSelectedCinema(cinema)
+    dispatch(showBeginEditModal())
+  }
 
   const handleDeleteClick = (cinema) => {
-    dispatch(deleteCinema(cinema.id));
-  };
+    dispatch(deleteCinema(cinema.id, { currentPage: currentPage - 1 }))
+  }
+
+  const handleTableChange = (paginationInfo) => {
+    setCurrentPage(paginationInfo.current)
+    setPageSize(paginationInfo.pageSize)
+  }
 
   const columns = [
     {
@@ -100,7 +106,7 @@ useEffect(() => {
       key: "id",
       width: "10%",
       render: (_, cinema) => (
-        <a href={`${BASE_URL}room?cinemaId=${cinema.id}`} target="_blank">
+        <a href={`${BASE_URL}room?cinemaId=${cinema.id}`} target="_blank" rel="noreferrer">
           Xem danh sách phòng
         </a>
       ),
@@ -109,9 +115,7 @@ useEffect(() => {
       title: "Sửa",
       key: "edit",
       width: "5%",
-      render: (_, cinema) => (
-        <Button onClick={() => handleEditClick(cinema)}>Sửa</Button>
-      ),
+      render: (_, cinema) => <Button onClick={() => handleEditClick(cinema)}>Sửa</Button>,
     },
     {
       title: "Xóa",
@@ -123,11 +127,11 @@ useEffect(() => {
         </Button>
       ),
     },
-  ];
+  ]
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Loading />
 
-  console.log("Cinemas:", cinemas);
+  console.log("Cinemas:", cinemas)
   return (
     <PageLayout>
       <div>
@@ -144,11 +148,26 @@ useEffect(() => {
           </Button>
         </div>
 
-        <Table bordered columns={columns} dataSource={cinemas} rowKey="id" />
+        <Table
+          bordered
+          columns={columns}
+          dataSource={cinemas}
+          rowKey="id"
+          pagination={{
+            current: pagination.current || 1,
+            pageSize: pagination.pageSize || 10,
+            total: pagination.total || 0,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} rạp`,
+            pageSizeOptions: ["10", "20", "50", "100"],
+          }}
+          onChange={handleTableChange}
+        />
         <AddEditCinema type={modalType} cinema={selectedCinema} />
       </div>
     </PageLayout>
-  );
-};
+  )
+}
 
-export default CinemaList;
+export default CinemaList

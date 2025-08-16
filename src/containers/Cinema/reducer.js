@@ -1,38 +1,46 @@
-import * as types from "./constants";
+import * as types from "./constants"
 
 const initialState = {
   cinemas: [],
+  pagination: {
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    totalPages: 0,
+  },
   showEditModal: false,
   loading: false,
   failedMessage: null,
   successMessage: null,
-};
+}
 
 const cinemaReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_CINEMAS:
-      return { ...state, cinemas: action.payload };
+      return { ...state, cinemas: action.payload }
+    case types.SET_PAGINATION:
+      return { ...state, pagination: action.payload }
     case types.SHOW_BEGIN_EDIT_MODAL:
-      return { ...state, showEditModal: true };
+      return { ...state, showEditModal: true }
     case types.SHOW_END_EDIT_MODAL:
-      return { ...state, showEditModal: false };
+      return { ...state, showEditModal: false }
     case types.SET_BEGIN_LOADING_STATUS:
-      return { ...state, loading: true };
+      return { ...state, loading: true }
     case types.SET_END_LOADING_STATUS:
-      return { ...state, loading: false };
+      return { ...state, loading: false }
     case types.SET_FAILED_MESSAGE:
-      return { ...state, failedMessage: action.payload };
+      return { ...state, failedMessage: action.payload }
     case types.SET_SUCCESS_MESSAGE:
-      return { ...state, successMessage: action.payload };
+      return { ...state, successMessage: action.payload }
     case types.CLEAR_MESSAGES:
       return {
         ...state,
         successMessage: null,
         failedMessage: null,
-      };
+      }
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default cinemaReducer;
+export default cinemaReducer
