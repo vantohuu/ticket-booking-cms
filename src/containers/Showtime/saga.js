@@ -78,7 +78,7 @@ function* createShowtimeSaga(action) {
   } catch (error) {
     console.error("Create showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create showtime failed"))
+    yield put(actions.setFailedMessage("Create showtime failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -98,7 +98,7 @@ function* updateShowtimeSaga(action) {
   } catch (error) {
     console.error("Update showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update showtime failed"))
+    yield put(actions.setFailedMessage("Update showtime failed: " + error?.response?.data?.message || "An error occurred" ))
   }
 }
 
@@ -118,7 +118,7 @@ function* deleteShowtimeSaga(action) {
   } catch (error) {
     console.error("Delete showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete showtime failed"))
+    yield put(actions.setFailedMessage("Delete showtime failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 

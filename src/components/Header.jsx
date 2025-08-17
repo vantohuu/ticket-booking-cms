@@ -1,9 +1,7 @@
 import React from 'react';
-import { Button, Avatar, Dropdown, Menu, Typography } from 'antd';
+import { Button, Avatar, Dropdown, Menu } from 'antd';
 import { MenuOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
-
-const { Title } = Typography;
 
 const AppHeader = ({ onToggleDrawer }) => {
   const navigate = useNavigate();
@@ -32,7 +30,7 @@ const AppHeader = ({ onToggleDrawer }) => {
           onClick={onToggleDrawer}
           className="text-2xl p-0"
         />
-        <h1 className="text-xl font-bold m-0 select-none">🎟 Tiket Booking CMS</h1>
+        <h1 className="text-xl font-bold m-0 select-none">🎟 Ticket Booking CMS</h1>
       </div>
 
       <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>

@@ -48,7 +48,7 @@ const AddEditShowtime = ({ type = "create", showtime, currentPage }) => {
     const payload = {
       ...values,
       startTime: dayjs(values.startTime).utc(true),
-      endTime: dayjs(values.endTime).utc(true),
+      endTime: values.endTime ? dayjs(values.endTime).utc(true) : null,
     }
     if (type === "create") {
       dispatch(createShowtime(payload))
@@ -129,7 +129,7 @@ const AddEditShowtime = ({ type = "create", showtime, currentPage }) => {
         <Form.Item
           label="Thời gian kết thúc"
           name="endTime"
-          rules={[{ required: true, message: "Vui lòng chọn thời gian kết thúc" }, { validator: validateEndTime }]}
+          rules={[{ validator: validateEndTime }]}
         >
           <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
         </Form.Item>

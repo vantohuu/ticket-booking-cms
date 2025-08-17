@@ -76,7 +76,7 @@ function* createMovieSaga(action) {
   } catch (error) {
     console.error("Create movie failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create movie failed"))
+    yield put(actions.setFailedMessage("Create movie failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -107,7 +107,7 @@ function* updateMovieSaga(action) {
   } catch (error) {
     console.error("Update movie failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update movie failed"))
+    yield put(actions.setFailedMessage("Update movie failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -126,7 +126,7 @@ function* deleteMovieSaga(action) {
   } catch (error) {
     console.error("Delete movie failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete movie failed"))
+    yield put(actions.setFailedMessage("Delete movie failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 

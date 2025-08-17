@@ -38,12 +38,12 @@ function* createCinemaSaga(action) {
     if (res.data) {
       console.log("Cinema created successfully", res.data)
       yield put(actions.fetchCinemas({ page: 0 })) // Go to first page after creation
-      yield put(actions.setSuccessMessage("Cinema created successfully"))
+      yield put(actions.setSuccessMessage("Cinema created successfully" ))
     }
   } catch (error) {
     console.error("Create cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create cinema failed"))
+    yield put(actions.setFailedMessage("Create cinema failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -62,7 +62,7 @@ function* updateCinemaSaga(action) {
   } catch (error) {
     console.error("Update cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update cinema failed"))
+    yield put(actions.setFailedMessage("Update cinema failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -81,7 +81,7 @@ function* deleteCinemaSaga(action) {
   } catch (error) {
     console.error("Delete cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete cinema failed"))
+    yield put(actions.setFailedMessage("Delete cinema failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 

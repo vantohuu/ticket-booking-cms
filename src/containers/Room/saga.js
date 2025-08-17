@@ -56,7 +56,7 @@ function* createRoomSaga(action) {
   } catch (error) {
     console.error("Create room failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create room failed"))
+    yield put(actions.setFailedMessage("Create room failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -75,7 +75,7 @@ function* updateRoomSaga(action) {
   } catch (error) {
     console.error("Update room failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update room failed"))
+    yield put(actions.setFailedMessage("Update room failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
@@ -94,7 +94,7 @@ function* deleteRoomSaga(action) {
   } catch (error) {
     console.error("Delete room failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete room failed"))
+    yield put(actions.setFailedMessage("Delete room failed: " + error?.response?.data?.message || "An error occurred"))
   }
 }
 
