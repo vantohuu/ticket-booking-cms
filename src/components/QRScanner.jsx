@@ -33,15 +33,15 @@ const QRScanner = () => {
     }
     setLoadingApprove(true);
     try {
-      await scanTicket(scannedData);
-      message.success("Vé đã được duyệt thành công!");
+      const response = await scanTicket(scannedData);
+      message.success(response?.data?.result?.message || "Vé đã được duyệt thành công!");
       setScannedData((prev) => ({ ...prev, status: true }));
     } catch (error) {
       console.error(error);
-      message.error("Vé bị lỗi. Vui lòng thử lại.");
+      message.error(error?.response?.data?.message || "Vé bị lỗi. Vui lòng thử lại.");
     } finally {
       setLoadingApprove(false);
-    }
+    } 
   };
 
   return (
