@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
 
-const PrivateRoute = () => {
+const ManagerRoute = () => {
   const token = localStorage.getItem("access_token")
 
   if (!token) {
@@ -12,22 +12,17 @@ const PrivateRoute = () => {
     const decoded = jwtDecode(token)
     const roles = decoded?.scope || ""
 
-    // Block CUSTOMER role
-    if (roles.includes("ROLE_CUSTOMER")) {
-      return <Navigate to="/unauthorized" replace />
-    }
-
-    // Allow MANAGER and STAFF
-    if (roles.includes("ROLE_MANAGER") || roles.includes("ROLE_STAFF")) {
+    // Only allow MANAGER role
+    if (roles.includes("ROLE_MANAGER")) {
       return <Outlet />
     }
 
-    // No valid role found
-    return <Navigate to="/login" replace />
+    // Redirect to home if not manager
+    return <Navigate to="/" replace />
   } catch (error) {
     console.error("Token decode error:", error)
     return <Navigate to="/login" replace />
   }
 }
 
-export default PrivateRoute
+export default ManagerRoute
