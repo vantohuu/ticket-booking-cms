@@ -9,3 +9,17 @@ export const getMoviesPagination = (page = 0, size = 10, sort = "id,asc") =>
 export const createMovie = (data) => api.post(`${BASE_URL}${MOVIE_SERVICE}/movies`, data)
 export const updateMovie = (id, data) => api.put(`${BASE_URL}${MOVIE_SERVICE}/movies/${id}`, data)
 export const deleteMovie = (id) => api.delete(`${BASE_URL}${MOVIE_SERVICE}/movies/${id}`)
+
+export const createMovieWithUpload = (formData) =>
+  api.post(`${BASE_URL}${MOVIE_SERVICE}/movies/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+
+export const updateMovieWithUpload = (id, formData) =>
+  api.put(`${BASE_URL}${MOVIE_SERVICE}/movies/${id}/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })

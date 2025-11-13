@@ -65,49 +65,124 @@ function* fetchShowtimesSaga(action) {
 function* createMovieSaga(action) {
   try {
     yield put(actions.setBeginLoadingStatus())
-    console.log("Creating movie with data:", action.payload)
-    const res = yield call(api.createMovie, action.payload)
+    console.log("[v0] Creating movie with data:", action.payload)
+
+    let res
+    if (action.payload.posterFile) {
+      const formData = new FormData()
+      const posterFile = action.payload.posterFile
+
+      console.log("[v0] Creating movie with file upload")
+      console.log("[v0] File details:", posterFile.name, posterFile.type, posterFile.size)
+
+      if (action.payload.title) formData.append("title", action.payload.title)
+      if (action.payload.duration) formData.append("duration", action.payload.duration)
+
+      if (action.payload.description) formData.append("description", action.payload.description)
+      if (action.payload.language) formData.append("language", action.payload.language)
+      if (action.payload.trailer) formData.append("trailer", action.payload.trailer)
+      if (action.payload.releaseDate) formData.append("releaseDate", action.payload.releaseDate)
+
+      formData.append("posterFile", posterFile, posterFile.name)
+
+      if (action.payload.genreIds && action.payload.genreIds.length > 0) {
+        action.payload.genreIds.forEach((id) => formData.append("genreIds", id))
+      }
+      if (action.payload.actorIds && action.payload.actorIds.length > 0) {
+        action.payload.actorIds.forEach((id) => formData.append("actorIds", id))
+      }
+
+      // Debug: Log all FormData entries
+      console.log("[v0] FormData entries:")
+      for (const pair of formData.entries()) {
+        console.log("[v0]", pair[0], ":", pair[1])
+      }
+
+      res = yield call(api.createMovieWithUpload, formData)
+    } else {
+      res = yield call(api.createMovie, action.payload)
+    }
+
     yield put(actions.setEndLoadingStatus())
     if (res.data) {
-      console.log("Movie created successfully", res.data)
-      yield put(actions.fetchMovies({ page: 0 })) // Go to first page after creation
+      console.log("[v0] Movie created successfully", res.data)
+      yield put(actions.fetchMovies({ page: 0 }))
       yield put(actions.setSuccessMessage("Movie created successfully"))
     }
   } catch (error) {
-    console.error("Create movie failed", error)
+    console.error("[v0] Create movie failed", error)
+    console.error("[v0] Error response:", error?.response?.data)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create movie failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Create movie failed: " + (error?.response?.data?.message || "An error occurred")),
+    )
   }
 }
 
 function* updateMovieSaga(action) {
   try {
     yield put(actions.setBeginLoadingStatus())
-    console.log("Updating movie with data:", action.payload)
-    const res = yield call(api.updateMovie, action.payload.id, {
-      title: action.payload.title,
-      description: action.payload.description,
-      duration: action.payload.duration,
-      language: action.payload.language,
-      poster: action.payload.poster,
-      trailer: action.payload.trailer,
-      releaseDate: action.payload.releaseDate,
-      endDate: action.payload.endDate,
-      status: action.payload.status,
-      genreIds: action.payload.genreIds,
-      actorIds: action.payload.actorIds,
-    })
+    console.log("[v0] Updating movie with data:", action.payload)
+
+    let res
+    if (action.payload.data.posterFile) {
+      const formData = new FormData()
+      const posterFile = action.payload.data.posterFile
+
+      console.log("[v0] Updating movie with file upload")
+      console.log("[v0] File details:", posterFile.name, posterFile.type, posterFile.size)
+
+      if (action.payload.data.title) formData.append("title", action.payload.data.title)
+      if (action.payload.data.duration) formData.append("duration", action.payload.data.duration)
+
+      if (action.payload.data.description) formData.append("description", action.payload.data.description)
+      if (action.payload.data.language) formData.append("language", action.payload.data.language)
+      if (action.payload.data.trailer) formData.append("trailer", action.payload.data.trailer)
+      if (action.payload.data.releaseDate) formData.append("releaseDate", action.payload.data.releaseDate)
+
+      formData.append("posterFile", posterFile, posterFile.name)
+
+      if (action.payload.data.genreIds && action.payload.data.genreIds.length > 0) {
+        action.payload.data.genreIds.forEach((id) => formData.append("genreIds", id))
+      }
+      if (action.payload.data.actorIds && action.payload.data.actorIds.length > 0) {
+        action.payload.data.actorIds.forEach((id) => formData.append("actorIds", id))
+      }
+
+      // Debug: Log all FormData entries
+      console.log("[v0] FormData entries:")
+      for (const pair of formData.entries()) {
+        console.log("[v0]", pair[0], ":", pair[1])
+      }
+
+      res = yield call(api.updateMovieWithUpload, action.payload.id, formData)
+    } else {
+      res = yield call(api.updateMovie, action.payload.id, {
+        title: action.payload.data.title,
+        description: action.payload.data.description,
+        duration: action.payload.data.duration,
+        language: action.payload.data.language,
+        trailer: action.payload.data.trailer,
+        releaseDate: action.payload.data.releaseDate,
+        genreIds: action.payload.data.genreIds,
+        actorIds: action.payload.data.actorIds,
+      })
+    }
+
     yield put(actions.setEndLoadingStatus())
     if (res.data) {
-      console.log("Movie updated successfully", res.data)
+      console.log("[v0] Movie updated successfully", res.data)
       const currentPage = action.currentPage || 0
       yield put(actions.fetchMovies({ page: currentPage }))
       yield put(actions.setSuccessMessage("Movie updated successfully"))
     }
   } catch (error) {
-    console.error("Update movie failed", error)
+    console.error("[v0] Update movie failed", error)
+    console.error("[v0] Error response:", error?.response?.data)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update movie failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Update movie failed: " + (error?.response?.data?.message || "An error occurred")),
+    )
   }
 }
 
@@ -125,8 +200,11 @@ function* deleteMovieSaga(action) {
     }
   } catch (error) {
     console.error("Delete movie failed", error)
+    console.error("[v0] Error response:", error?.response?.data)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete movie failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Delete movie failed: " + (error?.response?.data?.message || "An error occurred")),
+    )
   }
 }
 

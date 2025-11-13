@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect } from "react"
-import { Modal, Form, Input, Button, DatePicker, Select } from "antd"
+import { useEffect, useState } from "react"
+import { Modal, Form, Input, Button, DatePicker, Select, Upload, message } from "antd"
+import { UploadOutlined } from "@ant-design/icons"
 import { useDispatch, useSelector } from "react-redux"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -16,17 +17,34 @@ const AddEditMovie = ({ type = "create", movie, currentPage }) => {
   const actors = useSelector(selectActors)
   const genres = useSelector(selectGenres)
   dayjs.extend(utc)
+
+  const [posterFile, setPosterFile] = useState(null)
+  const [posterFileList, setPosterFileList] = useState([])
+
   const handleSubmit = (values) => {
+    const formattedDate = values.releaseDate ? dayjs(values.releaseDate).format("YYYY-MM-DD") : null
+
+
     const payload = {
-      ...values,
-      releaseDate: dayjs(values.releaseDate).utc(true),
+      title: values.title,
+      description: values.description,
+      duration: values.duration,
+      language: values.language,
+      trailer: values.trailer,
+      releaseDate: formattedDate,
+      genreIds: values.genreIds || [],
+      actorIds: values.actorIds || [],
+      posterFile: posterFile, // This is the actual File object
     }
 
+
     if (type === "edit" && movie?.id) {
-      dispatch(updateMovie({ ...payload, id: movie.id }, currentPage))
+      dispatch(updateMovie({ id: movie.id, data: payload }, currentPage))
     } else {
       dispatch(createMovie(payload))
-      form.resetFields() // Chỉ reset khi thêm mới
+      form.resetFields()
+      setPosterFile(null)
+      setPosterFileList([])
     }
 
     dispatch(showEndEditModal())
@@ -34,25 +52,70 @@ const AddEditMovie = ({ type = "create", movie, currentPage }) => {
 
   const handleCancel = () => {
     dispatch(showEndEditModal())
+    setPosterFile(null)
+    setPosterFileList([])
+  }
+
+  const handleFileChange = (file) => {
+  
+    // Validate file type
+    const isImage = file.type?.startsWith("image/")
+    if (!isImage) { 
+      message.error("Chỉ có thể tải lên file ảnh!")
+      setPosterFile(null)
+      setPosterFileList([])
+      return false
+    }
+
+    // Validate file size (max 5MB)
+    const isLt5M = file.size / 1024 / 1024 < 5
+    if (!isLt5M) {
+      message.error("Kích thước ảnh phải nhỏ hơn 5MB!")
+      setPosterFile(null)
+      setPosterFileList([])
+      return false
+    }
+
+    setPosterFile(file)
+    setPosterFileList([
+      {
+        uid: file.uid || "-1",
+        name: file.name,
+        status: "done",
+        originFileObj: file,
+      },
+    ])
+
+    return false // Prevent auto upload
   }
 
   useEffect(() => {
     if (isModalVisible) {
-      console.log("Movie data in modal:", movie)
       if (movie) {
         form.setFieldsValue({
           title: movie.title || "",
           description: movie.description || "",
           duration: movie.duration || "",
           language: movie.language || "",
-          poster: movie.poster || "",
           trailer: movie.trailer || "",
           releaseDate: movie.releaseDate ? dayjs(movie.releaseDate) : null,
           genreIds: movie.genres?.map((g) => g.id) || [],
           actorIds: movie.actors?.map((a) => a.id) || [],
         })
+        if (movie.poster) {
+          setPosterFileList([
+            {
+              uid: "-1",
+              name: "poster.jpg",
+              status: "done",
+              url: movie.poster,
+            },
+          ])
+        }
       } else {
         form.resetFields()
+        setPosterFile(null)
+        setPosterFileList([])
       }
     }
   }, [movie, isModalVisible, form])
@@ -84,8 +147,38 @@ const AddEditMovie = ({ type = "create", movie, currentPage }) => {
           <Input placeholder="Ngôn ngữ" />
         </Form.Item>
 
-        <Form.Item label="Poster URL" name="poster" rules={[{ required: true, message: "Vui lòng nhập link poster!" }]}>
-          <Input placeholder="Link poster" />
+        <Form.Item
+          label="Poster"
+          name="posterFile"
+          rules={[
+            {
+              required: !movie,
+              message: "Vui lòng tải lên poster!",
+            },
+          ]}
+        >
+          <Upload
+            listType="picture"
+            fileList={posterFileList}
+            beforeUpload={handleFileChange}
+            onRemove={() => {
+              setPosterFile(null)
+              setPosterFileList([])
+            }}
+            maxCount={1}
+            accept="image/*"
+          >
+            <Button icon={<UploadOutlined />}>Chọn ảnh poster</Button>
+          </Upload>
+          {movie?.poster && !posterFile && (
+            <div style={{ marginTop: 8 }}>
+              <img
+                src={movie.poster || "/placeholder.svg"}
+                alt="Current poster"
+                style={{ maxWidth: "200px", maxHeight: "200px", objectFit: "cover" }}
+              />
+            </div>
+          )}
         </Form.Item>
 
         <Form.Item
