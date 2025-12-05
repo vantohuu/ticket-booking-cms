@@ -6,3 +6,4 @@ export const selectIsLoading = (state) => state.room.loading
 export const selectFailedMessage = (state) => state.room.failedMessage
 export const selectSuccessMessage = (state) => state.room.successMessage
 export const selectPagination = (state) => state.room.pagination
+export const selectIsSearching = (state) => state.room.isSearching

@@ -15,3 +15,5 @@ export const setFailedMessage = (message) => ({ type: types.SET_FAILED_MESSAGE, 
 export const setSuccessMessage = (message) => ({ type: types.SET_SUCCESS_MESSAGE, payload: message })
 export const clearMessages = () => ({ type: types.CLEAR_MESSAGES })
 export const setPagination = (pagination) => ({ type: types.SET_PAGINATION, payload: pagination })
+export const searchRooms = (roomName, cinemaId) => ({ type: types.SEARCH_ROOMS, payload: { roomName, cinemaId } })
+export const setIsSearching = (isSearching) => ({ type: types.SET_IS_SEARCHING, payload: isSearching })

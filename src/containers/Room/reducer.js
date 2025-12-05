@@ -13,6 +13,7 @@ const initialState = {
     totalRecords: 0,
     totalPages: 0,
   },
+  isSearching: false,
 }
 
 const roomReducer = (state = initialState, action) => {
@@ -41,6 +42,8 @@ const roomReducer = (state = initialState, action) => {
       }
     case types.SET_PAGINATION:
       return { ...state, pagination: action.payload }
+    case types.SET_IS_SEARCHING:
+      return { ...state, isSearching: action.payload }
     default:
       return state
   }

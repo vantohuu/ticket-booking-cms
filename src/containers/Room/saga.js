@@ -6,7 +6,6 @@ import * as cinemaApi from "../../api/cinemaApi"
 
 function* fetchRoomsSaga(action) {
   try {
-    yield put(actions.setBeginLoadingStatus())
     const { page = 0, size = 10, sort = "id,desc" } = action.payload || {}
     const res = yield call(api.getRoomsPagination, page, size, sort)
 
@@ -24,11 +23,28 @@ function* fetchRoomsSaga(action) {
     } else {
       yield put(actions.setRooms([]))
     }
-    yield put(actions.setEndLoadingStatus())
   } catch (error) {
     console.error("Fetch rooms failed", error)
-    yield put(actions.setEndLoadingStatus())
     yield put(actions.setFailedMessage("Fetch rooms failed"))
+  }
+}
+
+function* searchRoomsSaga(action) {
+  try {
+    yield put(actions.setIsSearching(true))
+    const { roomName, cinemaId } = action.payload
+    const res = yield call(api.searchRooms, roomName, cinemaId)
+
+    if (res.data && res.data.result) {
+      yield put(actions.setRooms(res.data.result))
+    } else {
+      yield put(actions.setRooms([]))
+    }
+    yield put(actions.setIsSearching(false))
+  } catch (error) {
+    console.error("Search rooms failed", error)
+    yield put(actions.setIsSearching(false))
+    yield put(actions.setFailedMessage("Search rooms failed"))
   }
 }
 
@@ -104,4 +120,5 @@ export default function* roomSaga() {
   yield takeLatest(types.CREATE_ROOM, createRoomSaga)
   yield takeLatest(types.UPDATE_ROOM, updateRoomSaga)
   yield takeLatest(types.DELETE_ROOM, deleteRoomSaga)
+  yield takeLatest(types.SEARCH_ROOMS, searchRoomsSaga)
 }

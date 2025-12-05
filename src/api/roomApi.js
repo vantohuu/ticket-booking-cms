@@ -10,3 +10,9 @@ export const getRoomsByCinema = (cinemaId) => api.get(`${BASE_URL}${CINEMA_SERVI
 export const createRoom = (data) => api.post(`${BASE_URL}${CINEMA_SERVICE}/rooms`, data)
 export const updateRoom = (id, data) => api.put(`${BASE_URL}${CINEMA_SERVICE}/rooms/${id}`, data)
 export const deleteRoom = (id) => api.delete(`${BASE_URL}${CINEMA_SERVICE}/rooms/${id}`)
+export const searchRooms = (roomName, cinemaId) => {
+  const params = new URLSearchParams()
+  if (roomName) params.append("roomName", roomName)
+  if (cinemaId) params.append("cinemaId", cinemaId)
+  return api.get(`${BASE_URL}${CINEMA_SERVICE}/rooms/search?${params.toString()}`)
+}

@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message, Select, Modal } from "antd"
+import { Table, Button, Input, message, Select, Modal, Spin } from "antd"
 import { useSearchParams } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
-import { fetchRooms, fetchCinemas, showBeginEditModal, deleteRoom, clearMessages } from "./actions"
+import { fetchRooms, fetchCinemas, showBeginEditModal, deleteRoom, clearMessages, searchRooms } from "./actions"
 import {
   selectRooms,
   selectCinemas,
@@ -13,6 +13,7 @@ import {
   selectSuccessMessage,
   selectFailedMessage,
   selectPagination,
+  selectIsSearching,
 } from "./selectors"
 import PageLayout from "../../layouts/PageLayout"
 import AddEditRoom from "./AddEditPage"
@@ -27,12 +28,12 @@ const RoomList = () => {
   const cinemaIdFromQuery = searchParams.get("cinemaId")
   const [modalType, setModalType] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
-  const [searchText, setSearchText] = useState("")
-  const [selectedCinemaId, setSelectedCinemaId] = useState(cinemaIdFromQuery ? Number(cinemaIdFromQuery) : null)
+  const [searchRoomName, setSearchRoomName] = useState("")
+  const [filterCinemaId, setFilterCinemaId] = useState(cinemaIdFromQuery ? Number(cinemaIdFromQuery) : null)
   const [currentPage, setCurrentPage] = useState(0)
   const [pageSize, setPageSize] = useState(10)
-  const [sortField, setSortField] = useState("id")
-  const [sortOrder, setSortOrder] = useState("asc")
+  const [isSearchingLocal, setIsSearchingLocal] = useState(false)
+  const isInitialMount = useRef(true)
 
   const rooms = useSelector(selectRooms) || []
   const cinemas = useSelector(selectCinemas) || []
@@ -40,11 +41,21 @@ const RoomList = () => {
   const errorText = useSelector(selectFailedMessage)
   const isLoading = useSelector(selectIsLoading)
   const pagination = useSelector(selectPagination)
+  const isSearching = useSelector(selectIsSearching)
 
   useEffect(() => {
-    dispatch(fetchRooms(currentPage, pageSize, `${sortField},${sortOrder}`))
     dispatch(fetchCinemas())
-  }, [dispatch, currentPage, pageSize, sortField, sortOrder])
+    dispatch(fetchRooms(0, pageSize, "id,asc"))
+  }, [])
+
+  useEffect(() => {
+    if (!isSearching && !isInitialMount.current && !searchRoomName.trim() && !filterCinemaId) {
+      dispatch(fetchRooms(currentPage, pageSize, "id,asc"))
+    }
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    }
+  }, [currentPage, pageSize])
 
   useEffect(() => {
     if (messageText) {
@@ -60,40 +71,90 @@ const RoomList = () => {
     }
   }, [errorText, dispatch])
 
-  const handleAddClick = () => {
+  useEffect(() => {
+    const trimmedRoomName = searchRoomName.trim()
+    const hasSearchCriteria = trimmedRoomName || filterCinemaId
+
+    if (hasSearchCriteria) {
+      setIsSearchingLocal(true)
+      const debounceTimer = setTimeout(() => {
+        dispatch(searchRooms(trimmedRoomName || null, filterCinemaId))
+        setIsSearchingLocal(false)
+      }, 300)
+
+      return () => {
+        clearTimeout(debounceTimer)
+        setIsSearchingLocal(false)
+      }
+    } else if (!isInitialMount.current) {
+      setIsSearchingLocal(true)
+      const debounceTimer = setTimeout(() => {
+        dispatch(fetchRooms(currentPage, pageSize, "id,asc"))
+        setIsSearchingLocal(false)
+      }, 300)
+
+      return () => {
+        clearTimeout(debounceTimer)
+        setIsSearchingLocal(false)
+      }
+    }
+  }, [searchRoomName, filterCinemaId, currentPage, pageSize, dispatch])
+
+  const handleAddClick = useCallback(() => {
     setModalType("add")
     setSelectedRoom(null)
     dispatch(showBeginEditModal())
-  }
+  }, [dispatch])
 
-  const handleEditClick = (room) => {
-    setModalType("edit")
-    setSelectedRoom(room)
-    dispatch(showBeginEditModal())
-  }
+  const handleEditClick = useCallback(
+    (room) => {
+      setModalType("edit")
+      setSelectedRoom(room)
+      dispatch(showBeginEditModal())
+    },
+    [dispatch],
+  )
 
-  const handleDeleteClick = (room) => {
-    const cinemaName = cinemaIdToName[room.cinemaId] || "Không rõ"
-    Modal.confirm({
-      title: "Xác nhận xóa phòng chiếu",
-      content: `Bạn có chắc chắn muốn xóa phòng "${room.name}" tại rạp "${cinemaName}"? Hành động này không thể hoàn tác.`,
-      okText: "Xóa",
-      okType: "danger",
-      cancelText: "Hủy",
-      onOk() {
-        dispatch(deleteRoom(room.id, currentPage))
-      },
-    })
-  }
+  const handleDeleteClick = useCallback(
+    (room) => {
+      const cinemaName = cinemaIdToName[room.cinemaId] || "Không rõ"
+      Modal.confirm({
+        title: "Xác nhận xóa phòng chiếu",
+        content: `Bạn có chắc chắn muốn xóa phòng "${room.name}" tại rạp "${cinemaName}"? Hành động này không thể hoàn tác.`,
+        okText: "Xóa",
+        okType: "danger",
+        cancelText: "Hủy",
+        onOk() {
+          dispatch(deleteRoom(room.id, currentPage))
+        },
+      })
+    },
+    [dispatch, currentPage],
+  )
 
-  const handleCinemaChange = (value) => {
-    setSelectedCinemaId(value)
-    const params = new URLSearchParams()
-    if (value !== null) {
-      params.set("cinemaId", value)
+  const handleCinemaFilterChange = useCallback(
+    (value) => {
+      setFilterCinemaId(value)
+      const params = new URLSearchParams()
+      if (value !== null) {
+        params.set("cinemaId", value)
+      }
+      navigate(`?${params.toString()}`)
+    },
+    [navigate],
+  )
+
+  const handleTableChange = useCallback((paginationInfo) => {
+    if (paginationInfo) {
+      setCurrentPage(paginationInfo.current - 1)
+      setPageSize(paginationInfo.pageSize)
     }
-    navigate(`?${params.toString()}`)
-  }
+  }, [])
+
+  const handleRoomNameSearchChange = useCallback((e) => {
+    setSearchRoomName(e.target.value)
+  }, [])
+
   const cinemaIdToName = useMemo(() => {
     const map = {}
     cinemas.forEach((cinema) => {
@@ -102,109 +163,90 @@ const RoomList = () => {
     return map
   }, [cinemas])
 
-  const filteredRooms = useMemo(() => {
-    return rooms.filter((room) => {
-      const matchName = room.name.toLowerCase().includes(searchText)
-      const matchCinema = selectedCinemaId === null || room.cinemaId === selectedCinemaId
-      return matchName && matchCinema
-    })
-  }, [rooms, searchText, selectedCinemaId])
+  const columns = useMemo(
+    () => [
+      {
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
+        sorter: (a, b) => a.id - b.id,
+        width: "10%",
+      },
+      {
+        title: "Tên phòng",
+        dataIndex: "name",
+        key: "name",
+        sorter: (a, b) => a.name.localeCompare(b.name),
+        width: "30%",
+      },
+      {
+        title: "Số ghế",
+        dataIndex: "totalSeats",
+        key: "totalSeats",
+        sorter: (a, b) => a.totalSeats - b.totalSeats,
+        width: "15%",
+      },
+      {
+        title: "Tên rạp",
+        dataIndex: "cinemaId",
+        key: "cinemaName",
+        render: (cinemaId) => cinemaIdToName[cinemaId] || "Không rõ",
+        width: "20%",
+      },
+      {
+        title: "Sơ đồ ghế",
+        dataIndex: "id",
+        key: "id",
+        width: "10%",
+        render: (_, room) => (
+          <a href={`${BASE_URL}seat-map?roomId=${room.id}`} target="_blank" rel="noreferrer">
+            Xem sơ đồ ghế
+          </a>
+        ),
+      },
+      {
+        title: "Sửa",
+        key: "edit",
+        width: "7.5%",
+        render: (_, room) => <Button onClick={() => handleEditClick(room)}>Sửa</Button>,
+      },
+      {
+        title: "Xóa",
+        key: "delete",
+        width: "7.5%",
+        render: (_, room) => (
+          <Button danger onClick={() => handleDeleteClick(room)}>
+            Xóa
+          </Button>
+        ),
+      },
+    ],
+    [cinemaIdToName, handleEditClick, handleDeleteClick],
+  )
 
-  const handleTableChange = (paginationInfo, filters, sorter) => {
-    if (paginationInfo) {
-      setCurrentPage(paginationInfo.current - 1)
-      setPageSize(paginationInfo.pageSize)
-    }
-
-    if (sorter && sorter.field) {
-      setSortField(sorter.field)
-      setSortOrder(sorter.order === "descend" ? "desc" : "asc")
-    }
-  }
-
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: true,
-      width: "10%",
-    },
-    {
-      title: "Tên phòng",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-      filteredValue: searchText ? [searchText] : null,
-      onFilter: (value, record) => record.name.toLowerCase().includes(value.toLowerCase()),
-      width: "30%",
-    },
-    {
-      title: "Số ghế",
-      dataIndex: "totalSeats",
-      key: "totalSeats",
-      sorter: true,
-      width: "15%",
-    },
-    {
-      title: "Tên rạp",
-      dataIndex: "cinemaId",
-      key: "cinemaName",
-      render: (cinemaId) => cinemaIdToName[cinemaId] || "Không rõ",
-      filters: cinemas.map((c) => ({ text: c.name, value: c.id })),
-      onFilter: (value, record) => record.cinemaId === value,
-      width: "20%",
-    },
-    {
-      title: "Sơ đồ ghế",
-      dataIndex: "id",
-      key: "id",
-      width: "10%",
-      render: (_, room) => (
-        <a href={`${BASE_URL}seat-map?roomId=${room.id}`} target="_blank" rel="noreferrer">
-          Xem sơ đồ ghế
-        </a>
-      ),
-    },
-    {
-      title: "Sửa",
-      key: "edit",
-      width: "7.5%",
-      render: (_, room) => <Button onClick={() => handleEditClick(room)}>Sửa</Button>,
-    },
-    {
-      title: "Xóa",
-      key: "delete",
-      width: "7.5%",
-      render: (_, room) => (
-        <Button danger onClick={() => handleDeleteClick(room)}>
-          Xóa
-        </Button>
-      ),
-    },
-  ]
-
-  if (isLoading) return <Loading />
+  if (isLoading && !searchRoomName && !filterCinemaId) return <Loading />
 
   return (
     <PageLayout>
       <div>
         <h2 className="text-xl font-bold mb-4">Danh sách phòng chiếu</h2>
         <div className="mb-4 flex gap-4 items-center flex-wrap">
-          <Input.Search
+          <Input
             placeholder="Tìm theo tên phòng"
-            onChange={(e) => setSearchText(e.target.value.toLowerCase())}
-            style={{ width: 300 }}
+            value={searchRoomName}
+            onChange={handleRoomNameSearchChange}
+            style={{ width: 250 }}
             allowClear
+            onClear={() => setSearchRoomName("")}
+            suffix={isSearchingLocal ? <Spin size="small" /> : null}
           />
           <Select
-            placeholder="Lọc theo rạp"
-            onChange={handleCinemaChange}
+            placeholder="Chọn rạp"
+            onChange={handleCinemaFilterChange}
             allowClear
-            style={{ width: 200 }}
-            value={selectedCinemaId}
+            style={{ width: 250 }}
+            value={filterCinemaId}
           >
-            <Option value={null}>Tất cả rạp</Option>
             {cinemas.map((cinema) => (
               <Option key={cinema.id} value={cinema.id}>
                 {cinema.name}
@@ -220,8 +262,9 @@ const RoomList = () => {
         <Table
           bordered
           columns={columns}
-          dataSource={filteredRooms}
+          dataSource={rooms}
           rowKey="id"
+          loading={isSearchingLocal}
           pagination={{
             current: (pagination?.currentPage || 0) + 1,
             pageSize: pagination?.pageSize || 10,
@@ -230,6 +273,7 @@ const RoomList = () => {
             showQuickJumper: true,
             showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} phòng`,
             pageSizeOptions: ["5", "10", "20", "50"],
+            ...(isSearching && { showSizeChanger: false, showQuickJumper: false }),
           }}
           onChange={handleTableChange}
         />
