@@ -1,11 +1,13 @@
 import * as types from "./constants"
 
 export const fetchCinemas = (paginationParams) => ({ type: types.FETCH_CINEMAS, payload: paginationParams })
+export const searchCinemas = (name) => ({ type: types.SEARCH_CINEMAS, payload: name })
 export const createCinema = (data) => ({ type: types.CREATE_CINEMA, payload: data })
 export const updateCinema = (data, currentPage) => ({ type: types.UPDATE_CINEMA, payload: data, currentPage })
 export const deleteCinema = (id, currentPage) => ({ type: types.DELETE_CINEMA, payload: id, currentPage })
 export const setCinemas = (cinemas) => ({ type: types.SET_CINEMAS, payload: cinemas })
 export const setPagination = (pagination) => ({ type: types.SET_PAGINATION, payload: pagination })
+export const setSearching = (isSearching) => ({ type: types.SET_SEARCHING, payload: isSearching })
 export const showBeginEditModal = () => ({ type: types.SHOW_BEGIN_EDIT_MODAL })
 export const showEndEditModal = () => ({ type: types.SHOW_END_EDIT_MODAL })
 export const setBeginLoadingStatus = () => ({ type: types.SET_BEGIN_LOADING_STATUS })

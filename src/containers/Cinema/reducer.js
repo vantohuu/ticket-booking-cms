@@ -10,6 +10,7 @@ const initialState = {
   },
   showEditModal: false,
   loading: false,
+  searching: false,
   failedMessage: null,
   successMessage: null,
 }
@@ -20,6 +21,8 @@ const cinemaReducer = (state = initialState, action) => {
       return { ...state, cinemas: action.payload }
     case types.SET_PAGINATION:
       return { ...state, pagination: action.payload }
+    case types.SET_SEARCHING:
+      return { ...state, searching: action.payload }
     case types.SHOW_BEGIN_EDIT_MODAL:
       return { ...state, showEditModal: true }
     case types.SHOW_END_EDIT_MODAL:

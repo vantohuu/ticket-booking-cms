@@ -11,12 +11,17 @@ const initialState = {
   },
   showEditModal: false,
   loading: false,
+  isSearching: false,
 }
 
 const movieReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_MOVIES:
       return { ...state, movies: action.payload }
+    case types.SEARCH_MOVIES:
+      return { ...state, isSearching: true }
+    case types.FETCH_MOVIES:
+      return { ...state, isSearching: false }
     case types.SET_ACTORS:
       return { ...state, actors: action.payload }
     case types.SET_GENRES:

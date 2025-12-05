@@ -39,7 +39,6 @@ function* fetchMoviesSaga() {
 
 function* fetchShowtimesSaga(action) {
   try {
-    yield put(actions.setBeginLoadingStatus())
     const { page = 0, size = 10, sort = "id,desc" } = action.payload || {}
     const res = yield call(api.getShowtimesPagination, page, size, sort)
 
@@ -55,11 +54,34 @@ function* fetchShowtimesSaga(action) {
 
     yield put(actions.setShowtimes(showtimes))
     yield put(actions.setPagination(pagination))
-    yield put(actions.setEndLoadingStatus())
   } catch (error) {
     console.error("Fetch showtimes failed", error)
-    yield put(actions.setEndLoadingStatus())
     yield put(actions.setFailedMessage("Fetch showtimes failed"))
+  }
+}
+
+function* searchShowtimesSaga(action) {
+  try {
+    yield put(actions.setSearchLoading(true))
+    const { movieTitle, page = 0, size = 10, sort = "id,desc" } = action.payload || {}
+    const res = yield call(api.searchShowtimesByMovieTitle, movieTitle, page, size, sort)
+
+    const paginatedData = res.data && res.data.result ? res.data.result : {}
+    const showtimes = paginatedData.content || []
+    const pagination = {
+      current: paginatedData.number + 1,
+      pageSize: paginatedData.size,
+      total: paginatedData.totalElements,
+      totalPages: paginatedData.totalPages,
+    }
+
+    yield put(actions.setShowtimes(showtimes))
+    yield put(actions.setPagination(pagination))
+    yield put(actions.setSearchLoading(false))
+  } catch (error) {
+    console.error("Search showtimes failed", error)
+    yield put(actions.setSearchLoading(false))
+    yield put(actions.setFailedMessage("Search showtimes failed"))
   }
 }
 
@@ -78,7 +100,9 @@ function* createShowtimeSaga(action) {
   } catch (error) {
     console.error("Create showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create showtime failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Create showtime failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
@@ -98,7 +122,9 @@ function* updateShowtimeSaga(action) {
   } catch (error) {
     console.error("Update showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update showtime failed: " + error?.response?.data?.message || "An error occurred" ))
+    yield put(
+      actions.setFailedMessage("Update showtime failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
@@ -118,7 +144,9 @@ function* deleteShowtimeSaga(action) {
   } catch (error) {
     console.error("Delete showtime failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete showtime failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Delete showtime failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
@@ -127,6 +155,7 @@ export default function* showtimeSaga() {
   yield takeLatest(types.FETCH_ROOMS_BY_CINEMA, fetchRoomsByCinemaSaga)
   yield takeLatest(types.FETCH_MOVIES, fetchMoviesSaga)
   yield takeLatest(types.FETCH_SHOWTIMES, fetchShowtimesSaga)
+  yield takeLatest(types.SEARCH_SHOWTIMES, searchShowtimesSaga)
   yield takeLatest(types.CREATE_SHOWTIME, createShowtimeSaga)
   yield takeLatest(types.UPDATE_SHOWTIME, updateShowtimeSaga)
   yield takeLatest(types.DELETE_SHOWTIME, deleteShowtimeSaga)

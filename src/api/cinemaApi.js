@@ -9,3 +9,4 @@ export const getCinemasPagination = (page = 0, size = 10, sort = "id,asc") =>
 export const createCinema = (data) => api.post(`${BASE_URL}${CINEMA_SERVICE}/cinemas`, data)
 export const updateCinema = (id, data) => api.put(`${BASE_URL}${CINEMA_SERVICE}/cinemas/${id}`, data)
 export const deleteCinema = (id) => api.delete(`${BASE_URL}${CINEMA_SERVICE}/cinemas/${id}`)
+export const searchCinemas = (name) => api.get(`${BASE_URL}${CINEMA_SERVICE}/cinemas/search?name=${name}`)

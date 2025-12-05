@@ -13,6 +13,7 @@ const initialState = {
   },
   showEditModal: false,
   loading: false,
+  searchLoading: false,
   failedMessage: null,
   successMessage: null,
 }
@@ -37,6 +38,8 @@ const showtimeReducer = (state = initialState, action) => {
       return { ...state, loading: true }
     case types.SET_END_LOADING_STATUS:
       return { ...state, loading: false }
+    case types.SET_SEARCH_LOADING:
+      return { ...state, searchLoading: action.payload }
     case types.SET_FAILED_MESSAGE:
       return { ...state, failedMessage: action.payload }
     case types.SET_SUCCESS_MESSAGE:

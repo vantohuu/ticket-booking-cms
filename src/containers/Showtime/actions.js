@@ -13,6 +13,11 @@ export const setMovies = (movies) => ({ type: types.SET_MOVIES, payload: movies 
 export const setCinemas = (cinames) => ({ type: types.SET_CINEMAS, payload: cinames })
 export const setRooms = (rooms) => ({ type: types.SET_ROOMS, payload: rooms })
 export const setPagination = (pagination) => ({ type: types.SET_PAGINATION, payload: pagination })
+export const searchShowtimes = (movieTitle, paginationParams) => ({
+  type: types.SEARCH_SHOWTIMES,
+  payload: { movieTitle, ...paginationParams },
+})
+export const setSearchLoading = (loading) => ({ type: types.SET_SEARCH_LOADING, payload: loading })
 export const showBeginEditModal = () => ({ type: types.SHOW_BEGIN_EDIT_MODAL })
 export const showEndEditModal = () => ({ type: types.SHOW_END_EDIT_MODAL })
 export const setBeginLoadingStatus = () => ({ type: types.SET_BEGIN_LOADING_STATUS })

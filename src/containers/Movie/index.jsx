@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Table, Button, Input, message, Modal } from "antd"
+import { Table, Button, Input, message, Modal, Spin } from "antd"
 import dayjs from "dayjs"
 import {
   fetchMovies,
@@ -12,8 +12,16 @@ import {
   deleteMovie,
   fetchShowtimes,
   clearMessages,
+  searchMovies,
 } from "./actions"
-import { selectMovies, selectIsLoading, selectSuccessMessage, selectFailedMessage, selectPagination } from "./selectors"
+import {
+  selectMovies,
+  selectIsLoading,
+  selectSuccessMessage,
+  selectFailedMessage,
+  selectPagination,
+  selectIsSearching,
+} from "./selectors"
 import PageLayout from "../../layouts/PageLayout"
 import AddEditMovie from "./AddEditPage"
 import Loading from "../../components/Loading"
@@ -26,17 +34,30 @@ const MovieList = () => {
   const [searchText, setSearchText] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [isSearchingLocal, setIsSearchingLocal] = useState(false)
+  const searchInputRef = useRef(null)
+  const isInitialMount = useRef(true)
   const messageText = useSelector(selectSuccessMessage)
   const errorText = useSelector(selectFailedMessage)
   const movies = useSelector(selectMovies) || []
   const isLoading = useSelector(selectIsLoading)
   const pagination = useSelector(selectPagination) || {}
+  const isSearching = useSelector(selectIsSearching)
   const [showShowtimesModal, setShowShowtimesModal] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchMovies({ page: currentPage - 1, size: pageSize }))
     dispatch(fetchActors())
     dispatch(fetchGenres())
+    dispatch(fetchMovies({ page: 0, size: pageSize }))
+  }, [])
+
+  useEffect(() => {
+    if (!isSearching && !isInitialMount.current) {
+      dispatch(fetchMovies({ page: currentPage - 1, size: pageSize }))
+    }
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    }
   }, [currentPage, pageSize])
 
   useEffect(() => {
@@ -53,144 +74,183 @@ const MovieList = () => {
     }
   }, [errorText, dispatch])
 
-  const handleAddClick = () => {
+  useEffect(() => {
+    const trimmedValue = searchText.trim()
+
+    if (trimmedValue) {
+      setIsSearchingLocal(true)
+      const debounceTimer = setTimeout(() => {
+        dispatch(searchMovies(trimmedValue))
+        setIsSearchingLocal(false)
+      }, 500)
+
+      return () => {
+        clearTimeout(debounceTimer)
+        setIsSearchingLocal(false)
+      }
+    } else if (searchText === "") {
+      dispatch(fetchMovies({ page: 0, size: pageSize }))
+      setCurrentPage(1)
+      setIsSearchingLocal(false)
+    }
+  }, [searchText, dispatch, pageSize])
+
+  const handleAddClick = useCallback(() => {
     setModalType("add")
     setSelectedMovie(null)
     dispatch(showBeginEditModal())
-  }
+  }, [dispatch])
 
-  const handleEditClick = (movie) => {
-    setModalType("edit")
-    setSelectedMovie(movie)
-    dispatch(showBeginEditModal())
-  }
+  const handleEditClick = useCallback(
+    (movie) => {
+      setModalType("edit")
+      setSelectedMovie(movie)
+      dispatch(showBeginEditModal())
+    },
+    [dispatch],
+  )
 
-  const handleDeleteClick = (movie) => {
-    Modal.confirm({
-      title: "Xác nhận xóa phim",
-      content: `Bạn có chắc chắn muốn xóa phim "${movie.title}"? Hành động này không thể hoàn tác.`,
-      okText: "Xóa",
-      okType: "danger",
-      cancelText: "Hủy",
-      onOk() {
-        dispatch(deleteMovie(movie.id, currentPage - 1))
-      },
-    })
-  }
+  const handleDeleteClick = useCallback(
+    (movie) => {
+      Modal.confirm({
+        title: "Xác nhận xóa phim",
+        content: `Bạn có chắc chắn muốn xóa phim "${movie.title}"? Hành động này không thể hoàn tác.`,
+        okText: "Xóa",
+        okType: "danger",
+        cancelText: "Hủy",
+        onOk() {
+          dispatch(deleteMovie(movie.id, currentPage - 1))
+        },
+      })
+    },
+    [dispatch, currentPage],
+  )
 
-  const handleShowtimesClick = (movie) => {
-    dispatch(fetchShowtimes(movie.id))
-    setShowShowtimesModal(true)
-  }
+  const handleShowtimesClick = useCallback(
+    (movie) => {
+      dispatch(fetchShowtimes(movie.id))
+      setShowShowtimesModal(true)
+    },
+    [dispatch],
+  )
 
-  const handleTableChange = (paginationInfo) => {
+  const handleTableChange = useCallback((paginationInfo) => {
     setCurrentPage(paginationInfo.current)
     setPageSize(paginationInfo.pageSize)
-  }
+  }, [])
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id - b.id,
-      width: "5%",
-    },
-    {
-      title: "Tên phim",
-      dataIndex: "title",
-      key: "title",
-      sorter: (a, b) => a.title.localeCompare(b.title),
-      filteredValue: searchText ? [searchText] : null,
-      onFilter: (value, record) => record.title.toLowerCase().includes(value),
-      width: "15%",
-    },
-    {
-      title: "Poster",
-      dataIndex: "poster",
-      key: "poster",
-      width: "10%",
-      render: (url) =>
-        url ? (
-          <img
-            src={url || "/placeholder.svg"}
-            alt="Poster"
-            style={{ width: "60px", height: "90px", objectFit: "cover" }}
-          />
-        ) : (
-          "Không có"
+  const handleSearchChange = useCallback((e) => {
+    setSearchText(e.target.value)
+  }, [])
+
+  const columns = useMemo(
+    () => [
+      {
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
+        sorter: (a, b) => a.id - b.id,
+        width: "5%",
+      },
+      {
+        title: "Tên phim",
+        dataIndex: "title",
+        key: "title",
+        sorter: (a, b) => a.title.localeCompare(b.title),
+        width: "15%",
+      },
+      {
+        title: "Poster",
+        dataIndex: "poster",
+        key: "poster",
+        width: "10%",
+        render: (url) =>
+          url ? (
+            <img
+              src={url || "/placeholder.svg"}
+              alt="Poster"
+              style={{ width: "60px", height: "90px", objectFit: "cover" }}
+            />
+          ) : (
+            "Không có"
+          ),
+      },
+      {
+        title: "Ngôn ngữ",
+        dataIndex: "language",
+        key: "language",
+        width: "10%",
+      },
+      {
+        title: "Thời lượng (phút)",
+        dataIndex: "duration",
+        key: "duration",
+        width: "10%",
+      },
+      {
+        title: "Ngày phát hành",
+        dataIndex: "releaseDate",
+        key: "releaseDate",
+        width: "10%",
+        render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : ""),
+      },
+      {
+        title: "Thể loại",
+        dataIndex: "genres",
+        key: "genres",
+        width: "15%",
+        render: (genres) => (genres?.length > 0 ? genres.map((g) => g.name).join(", ") : "Không có"),
+      },
+      {
+        title: "Diễn viên",
+        dataIndex: "actors",
+        key: "actors",
+        width: "20%",
+        render: (actors) =>
+          actors?.length > 0 ? actors.map((a) => `${a.firstName} ${a.lastName}`).join(", ") : "Không có",
+      },
+      {
+        title: "Lịch chiếu",
+        key: "showtimes",
+        width: "10%",
+        render: (_, movie) => <Button onClick={() => handleShowtimesClick(movie)}>Lịch chiếu</Button>,
+      },
+      {
+        title: "Sửa",
+        key: "edit",
+        width: "5%",
+        render: (_, movie) => <Button onClick={() => handleEditClick(movie)}>Sửa</Button>,
+      },
+      {
+        title: "Xóa",
+        key: "delete",
+        width: "5%",
+        render: (_, movie) => (
+          <Button danger onClick={() => handleDeleteClick(movie)}>
+            Xóa
+          </Button>
         ),
-    },
-    {
-      title: "Ngôn ngữ",
-      dataIndex: "language",
-      key: "language",
-      width: "10%",
-    },
-    {
-      title: "Thời lượng (phút)",
-      dataIndex: "duration",
-      key: "duration",
-      width: "10%",
-    },
-    {
-      title: "Ngày phát hành",
-      dataIndex: "releaseDate",
-      key: "releaseDate",
-      width: "10%",
-      render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : ""),
-    },
-    {
-      title: "Thể loại",
-      dataIndex: "genres",
-      key: "genres",
-      width: "15%",
-      render: (genres) => (genres?.length > 0 ? genres.map((g) => g.name).join(", ") : "Không có"),
-    },
-    {
-      title: "Diễn viên",
-      dataIndex: "actors",
-      key: "actors",
-      width: "20%",
-      render: (actors) =>
-        actors?.length > 0 ? actors.map((a) => `${a.firstName} ${a.lastName}`).join(", ") : "Không có",
-    },
-    {
-      title: "Lịch chiếu",
-      key: "showtimes",
-      width: "10%",
-      render: (_, movie) => <Button onClick={() => handleShowtimesClick(movie)}>Lịch chiếu</Button>,
-    },
-    {
-      title: "Sửa",
-      key: "edit",
-      width: "5%",
-      render: (_, movie) => <Button onClick={() => handleEditClick(movie)}>Sửa</Button>,
-    },
-    {
-      title: "Xóa",
-      key: "delete",
-      width: "5%",
-      render: (_, movie) => (
-        <Button danger onClick={() => handleDeleteClick(movie)}>
-          Xóa
-        </Button>
-      ),
-    },
-  ]
+      },
+    ],
+    [handleShowtimesClick, handleEditClick, handleDeleteClick],
+  )
 
-  if (isLoading) return <Loading />
+  if (isLoading && !searchText) return <Loading />
 
   return (
     <PageLayout>
       <div>
         <h2 className="text-xl font-bold mb-4">Danh sách phim</h2>
         <div className="mb-4">
-          <Input.Search
+          <Input
+            ref={searchInputRef}
             placeholder="Tìm theo tên phim"
-            onChange={(e) => setSearchText(e.target.value.toLowerCase())}
+            value={searchText}
+            onChange={handleSearchChange}
             style={{ width: 300, marginRight: 16 }}
             allowClear
+            onClear={() => setSearchText("")}
+            suffix={isSearchingLocal ? <Spin size="small" /> : null}
           />
           <Button type="primary" onClick={handleAddClick}>
             Thêm phim mới
@@ -202,6 +262,7 @@ const MovieList = () => {
           columns={columns}
           dataSource={movies}
           rowKey="id"
+          loading={isSearchingLocal}
           pagination={{
             current: pagination.current || 1,
             pageSize: pagination.pageSize || 10,
@@ -210,6 +271,7 @@ const MovieList = () => {
             showQuickJumper: true,
             showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} phim`,
             pageSizeOptions: ["10", "20", "50", "100"],
+            ...(isSearching && { showSizeChanger: false, showQuickJumper: false }),
           }}
           onChange={handleTableChange}
         />

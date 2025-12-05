@@ -4,6 +4,7 @@ export const fetchMovies = (paginationParams) => ({ type: types.FETCH_MOVIES, pa
 export const fetchActors = () => ({ type: types.FETCH_ACTORS })
 export const fetchGenres = () => ({ type: types.FETCH_GENRES })
 export const fetchShowtimes = (movieId) => ({ type: types.FETCH_SHOWTIMES, payload: movieId })
+export const searchMovies = (title) => ({ type: types.SEARCH_MOVIES, payload: title })
 export const createMovie = (data) => ({ type: types.CREATE_MOVIE, payload: data })
 export const updateMovie = (data, currentPage) => ({ type: types.UPDATE_MOVIE, payload: data, currentPage })
 export const deleteMovie = (id, currentPage) => ({ type: types.DELETE_MOVIE, payload: id, currentPage })

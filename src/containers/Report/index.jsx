@@ -170,7 +170,7 @@ const ReportPage = () => {
       <div className="w-full h-screen relative">
         <iframe
           title="population_example"
-          src="https://app.powerbi.com/reportEmbed?reportId=29dd85c8-821e-49da-88d7-4acd85a2d708&autoAuth=true&ctid=ae2be1e4-132e-4e59-b21f-eb7e27b3b606"
+          src="https://app.powerbi.com/reportEmbed?reportId=ee859070-5da6-431a-b741-314c71a2b52c&autoAuth=true&ctid=ae2be1e4-132e-4e59-b21f-eb7e27b3b606"
           className="w-full h-full border-0"
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           allowFullScreen

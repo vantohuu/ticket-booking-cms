@@ -5,7 +5,9 @@ import * as api from "../../api/cinemaApi"
 
 function* fetchCinemasSaga(action) {
   try {
-    yield put(actions.setBeginLoadingStatus())
+    if (!action.payload || action.payload.page === 0) {
+      yield put(actions.setBeginLoadingStatus())
+    }
     const { page = 0, size = 10, sort = "id,desc" } = action.payload || {}
     const res = yield call(api.getCinemasPagination, page, size, sort)
 
@@ -21,11 +23,37 @@ function* fetchCinemasSaga(action) {
 
     yield put(actions.setCinemas(cinemas))
     yield put(actions.setPagination(pagination))
+    yield put(actions.setSearching(false))
     yield put(actions.setEndLoadingStatus())
   } catch (error) {
     console.error("Fetch cinemas failed", error)
     yield put(actions.setEndLoadingStatus())
+    yield put(actions.setSearching(false))
     yield put(actions.setFailedMessage("Fetch cinemas failed"))
+  }
+}
+
+function* searchCinemasSaga(action) {
+  try {
+    yield put(actions.setSearching(true))
+    const res = yield call(api.searchCinemas, action.payload)
+    const cinemas = res.data && res.data.result ? res.data.result : []
+
+    yield put(actions.setCinemas(cinemas))
+    // Set pagination for search results (no server pagination for search)
+    yield put(
+      actions.setPagination({
+        current: 1,
+        pageSize: cinemas.length || 10,
+        total: cinemas.length,
+        totalPages: 1,
+      }),
+    )
+    yield put(actions.setSearching(false))
+  } catch (error) {
+    console.error("Search cinemas failed", error)
+    yield put(actions.setSearching(false))
+    yield put(actions.setFailedMessage("Search cinemas failed"))
   }
 }
 
@@ -38,12 +66,14 @@ function* createCinemaSaga(action) {
     if (res.data) {
       console.log("Cinema created successfully", res.data)
       yield put(actions.fetchCinemas({ page: 0 })) // Go to first page after creation
-      yield put(actions.setSuccessMessage("Cinema created successfully" ))
+      yield put(actions.setSuccessMessage("Cinema created successfully"))
     }
   } catch (error) {
     console.error("Create cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Create cinema failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Create cinema failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
@@ -62,7 +92,9 @@ function* updateCinemaSaga(action) {
   } catch (error) {
     console.error("Update cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Update cinema failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Update cinema failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
@@ -81,12 +113,15 @@ function* deleteCinemaSaga(action) {
   } catch (error) {
     console.error("Delete cinema failed", error)
     yield put(actions.setEndLoadingStatus())
-    yield put(actions.setFailedMessage("Delete cinema failed: " + error?.response?.data?.message || "An error occurred"))
+    yield put(
+      actions.setFailedMessage("Delete cinema failed: " + error?.response?.data?.message || "An error occurred"),
+    )
   }
 }
 
 export default function* cinemaSaga() {
   yield takeLatest(types.FETCH_CINEMAS, fetchCinemasSaga)
+  yield takeLatest(types.SEARCH_CINEMAS, searchCinemasSaga)
   yield takeLatest(types.CREATE_CINEMA, createCinemaSaga)
   yield takeLatest(types.UPDATE_CINEMA, updateCinemaSaga)
   yield takeLatest(types.DELETE_CINEMA, deleteCinemaSaga)

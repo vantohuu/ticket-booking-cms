@@ -23,3 +23,5 @@ export const updateMovieWithUpload = (id, formData) =>
       "Content-Type": "multipart/form-data",
     },
   })
+
+export const searchMovies = (title) => api.get(`${BASE_URL}${MOVIE_SERVICE}/movies/search?title=${title}`)

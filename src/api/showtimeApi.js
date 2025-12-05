@@ -9,8 +9,13 @@ export const getShowtimesPagination = (page = 0, size = 10, sort = "id,asc") =>
 export const getAvailableSeats = (id) => api.get(`${BASE_URL}${MOVIE_SERVICE}/showtimes/${id}/available-seats`)
 export const getShowtimeById = (id) => api.get(`${BASE_URL}${MOVIE_SERVICE}/showtimes/${id}`)
 export const getShowtimesByMovie = (movieId) => api.get(`${BASE_URL}${MOVIE_SERVICE}/showtimes/movie/${movieId}`)
-export const getShowtimesByDateAndRoom = (data) => api.post(`${BASE_URL}${MOVIE_SERVICE}/showtimes/search-by-date-and-room`, data)
+export const getShowtimesByDateAndRoom = (data) =>
+  api.post(`${BASE_URL}${MOVIE_SERVICE}/showtimes/search-by-date-and-room`, data)
 export const getBookedTickets = (id) => api.get(`${BASE_URL}${MOVIE_SERVICE}/showtimes/${id}/booked-tickets`)
 export const createShowtime = (data) => api.post(`${BASE_URL}${MOVIE_SERVICE}/showtimes`, data)
 export const updateShowtime = (id, data) => api.put(`${BASE_URL}${MOVIE_SERVICE}/showtimes/${id}`, data)
 export const deleteShowtime = (id) => api.delete(`${BASE_URL}${MOVIE_SERVICE}/showtimes/${id}`)
+export const searchShowtimesByMovieTitle = (movieTitle, page = 0, size = 10, sort = "id,asc") =>
+  api.get(
+    `${BASE_URL}${MOVIE_SERVICE}/showtimes/search?movieTitle=${movieTitle}&page=${page}&size=${size}&sort=${sort}`,
+  )

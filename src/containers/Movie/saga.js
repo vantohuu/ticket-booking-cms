@@ -32,6 +32,27 @@ function* fetchMoviesSaga(action) {
   }
 }
 
+function* searchMoviesSaga(action) {
+  try {
+    const res = yield call(api.searchMovies, action.payload)
+    const searchResults = res.data && res.data.result ? res.data.result : []
+
+    // Set movies with search results and update pagination to reflect search results
+    yield put(actions.setMovies(searchResults))
+    yield put(
+      actions.setPagination({
+        current: 1,
+        pageSize: searchResults.length,
+        total: searchResults.length,
+        totalPages: 1,
+      }),
+    )
+  } catch (error) {
+    console.error("Search movies failed", error)
+    yield put(actions.setFailedMessage("Search movies failed"))
+  }
+}
+
 function* fetchActorsSaga() {
   try {
     const res = yield call(actorApi.getActors)
@@ -210,6 +231,7 @@ function* deleteMovieSaga(action) {
 
 export default function* movieSaga() {
   yield takeLatest(types.FETCH_MOVIES, fetchMoviesSaga)
+  yield takeLatest(types.SEARCH_MOVIES, searchMoviesSaga)
   yield takeLatest(types.FETCH_ACTORS, fetchActorsSaga)
   yield takeLatest(types.FETCH_GENRES, fetchGenresSaga)
   yield takeLatest(types.CREATE_MOVIE, createMovieSaga)
