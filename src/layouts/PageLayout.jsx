@@ -10,6 +10,7 @@ import {
   ClockCircleOutlined,
   BarChartOutlined,
   ScanOutlined,
+  UserOutlined,
 } from "@ant-design/icons"
 import { useNavigate, useLocation } from "react-router-dom"
 import AppHeader from "../components/Header"
@@ -94,6 +95,11 @@ function PageLayout({ children }) {
           key: "/seat-management",
           icon: <TableOutlined />,
           label: "Quản lí vé",
+        },
+        {
+          key: "/users",
+          icon: <UserOutlined />,
+          label: "Quản lí người dùng",
         },
         {
           key: "/reports",

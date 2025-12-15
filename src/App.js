@@ -13,6 +13,7 @@ import QRPage from "./containers/QR/index"
 import ProfilePage from "./containers/Profile/Loadable"
 import ReportPage from "./containers/Report/Loadable"
 import UnauthorizedPage from "./containers/Unauthorized/index"
+import UserPage from "./containers/User/Loadable"
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/seat-map" element={<SeatMapPage />} />
           <Route path="/showtime" element={<ShowtimePage />} />
           <Route path="/reports" element={<ReportPage />} />
+          <Route path="/users" element={<UserPage />} />
         </Route>
 
         {/* 404 fallback */}
