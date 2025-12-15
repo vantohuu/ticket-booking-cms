@@ -17,8 +17,7 @@ const PrivateRoute = () => {
       return <Navigate to="/unauthorized" replace />
     }
 
-    // Allow MANAGER and STAFF
-    if (roles.includes("ROLE_MANAGER") || roles.includes("ROLE_STAFF")) {
+    if (roles.includes("ROLE_ADMIN") || roles.includes("ROLE_MANAGER") || roles.includes("ROLE_STAFF")) {
       return <Outlet />
     }
 

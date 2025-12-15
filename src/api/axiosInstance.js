@@ -25,8 +25,7 @@ api.interceptors.request.use((config) => {
         return Promise.reject("Khách hàng không có quyền truy cập")
       }
 
-      // Allow MANAGER and STAFF
-      if (!roles.includes("ROLE_MANAGER") && !roles.includes("ROLE_STAFF")) {
+      if (!roles.includes("ROLE_ADMIN") && !roles.includes("ROLE_MANAGER") && !roles.includes("ROLE_STAFF")) {
         clearTokens()
         window.location.href = "/login"
         return Promise.reject("Không có quyền truy cập")

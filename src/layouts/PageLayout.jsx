@@ -11,6 +11,7 @@ import {
   BarChartOutlined,
   ScanOutlined,
   UserOutlined,
+  TeamOutlined,
 } from "@ant-design/icons"
 import { useNavigate, useLocation } from "react-router-dom"
 import AppHeader from "../components/Header"
@@ -43,12 +44,12 @@ function PageLayout({ children }) {
   }
 
   const userRole = getUserRole()
+  const isAdmin = userRole?.includes("ROLE_ADMIN")
   const isManager = userRole?.includes("ROLE_MANAGER")
   const isStaff = userRole?.includes("ROLE_STAFF")
 
   const getMenuItems = () => {
-    // Staff can only access QR scan and ticket management
-    if (isStaff && !isManager) {
+    if (isStaff && !isManager && !isAdmin) {
       return [
         {
           key: "/",
@@ -63,8 +64,7 @@ function PageLayout({ children }) {
       ]
     }
 
-    // Manager can access everything
-    if (isManager) {
+    if (isAdmin || isManager) {
       return [
         {
           key: "/",
@@ -100,6 +100,11 @@ function PageLayout({ children }) {
           key: "/users",
           icon: <UserOutlined />,
           label: "Quản lí người dùng",
+        },
+        {
+          key: "/staff",
+          icon: <TeamOutlined />,
+          label: "Quản lí nhân viên",
         },
         {
           key: "/reports",

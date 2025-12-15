@@ -8,6 +8,7 @@ import seatManagementReducer from "../containers/SeatManagement/reducer"
 import profileReducer from "../containers/Profile/reducer"
 import reportReducer from "../containers/Report/reducer"
 import userReducer from "../containers/User/reducer"
+import staffReducer from "../containers/Staff/reducer"
 
 const rootReducer = combineReducers({
   movie: movieReducer,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   report: reportReducer,
   user: userReducer,
+  staff: staffReducer,
 })
 
 export default rootReducer

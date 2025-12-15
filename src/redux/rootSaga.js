@@ -8,6 +8,7 @@ import seatManagementSaga from "../containers/SeatManagement/saga"
 import profileSaga from "../containers/Profile/saga"
 import reportSaga from "../containers/Report/saga"
 import userSaga from "../containers/User/saga"
+import staffSaga from "../containers/Staff/saga"
 
 export default function* rootSaga() {
   yield all([
@@ -20,5 +21,6 @@ export default function* rootSaga() {
     fork(profileSaga),
     fork(reportSaga),
     fork(userSaga),
+    fork(staffSaga),
   ])
 }

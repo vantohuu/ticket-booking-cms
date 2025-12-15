@@ -14,6 +14,7 @@ import ProfilePage from "./containers/Profile/Loadable"
 import ReportPage from "./containers/Report/Loadable"
 import UnauthorizedPage from "./containers/Unauthorized/index"
 import UserPage from "./containers/User/Loadable"
+import StaffPage from "./containers/Staff/Loadable"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="/showtime" element={<ShowtimePage />} />
           <Route path="/reports" element={<ReportPage />} />
           <Route path="/users" element={<UserPage />} />
+          <Route path="/staff" element={<StaffPage />} />
         </Route>
 
         {/* 404 fallback */}
