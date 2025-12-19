@@ -7,6 +7,12 @@ WORKDIR /app
 # Copy package files
 COPY package.json ./
 
+# 👉 Cài timezone data
+RUN apk add --no-cache tzdata
+
+# 👉 Set timezone Việt Nam
+ENV TZ=Asia/Ho_Chi_Minh
+
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
