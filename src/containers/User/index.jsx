@@ -182,18 +182,18 @@ const UserList = () => {
         width: "10%",
         render: (status) => <Tag color={status ? "green" : "red"}>{status ? "Hoạt động" : "Khóa"}</Tag>,
       },
-      {
-        title: "Sửa",
-        key: "edit",
-        width: "8%",
-        render: (_, user) => <Button onClick={() => handleEditClick(user)}>Sửa</Button>,
-      },
-      {
-        title: "Đổi mật khẩu",
-        key: "password",
-        width: "10%",
-        render: (_, user) => <Button onClick={() => handleChangePasswordClick(user)}>Đổi mật khẩu</Button>,
-      },
+      // {
+      //   title: "Sửa",
+      //   key: "edit",
+      //   width: "8%",
+      //   render: (_, user) => <Button onClick={() => handleEditClick(user)}>Sửa</Button>,
+      // },
+      // {
+      //   title: "Đổi mật khẩu",
+      //   key: "password",
+      //   width: "10%",
+      //   render: (_, user) => <Button onClick={() => handleChangePasswordClick(user)}>Đổi mật khẩu</Button>,
+      // },
       {
         title: "Xóa",
         key: "delete",
