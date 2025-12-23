@@ -127,11 +127,14 @@ const SeatMap = ({
           />
         </div>
 
-        <div className="border-t pt-2">
-          <div className="font-medium text-sm mb-2">Trạng thái</div>
-          <LegendSimple label="Đã đặt" className="bg-gray-400" />
-          <LegendSimple label="Đã quét QR" className="bg-yellow-400" />
-        </div>
+        {bookedSeats.length > 0 &&
+          <div className="border-t pt-2">
+            <div className="font-medium text-sm mb-2">Trạng thái</div>
+            <LegendSimple label="Đã đặt" className="bg-gray-400" />
+            <LegendSimple label="Đã quét QR" className="bg-yellow-400" />
+          </div>
+        }
+        
       </div>
 
       {/* ======================
