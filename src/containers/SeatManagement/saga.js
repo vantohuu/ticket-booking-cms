@@ -57,6 +57,7 @@ function* fetchBookedTicketsSaga(action) {
   try {
     yield put(actions.setBeginLoadingStatus());
     const res = yield call(showtimeApi.getBookedTickets, action.payload);
+    console.log("res.data.result", res.data.result)
     yield put(actions.setTickets(res.data && res.data.result ? res.data.result : []));
     yield put(actions.setEndLoadingStatus());
   } catch (error) {

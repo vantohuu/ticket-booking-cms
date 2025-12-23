@@ -76,8 +76,11 @@ const SeatManagement = () => {
       ),
     [bookedTickets]
   );
+
+  console.log("bookedTickets", bookedTickets)
   const handleSelectSeat = (seatName) => {
     const ticket = bookedTickets.find((t) => t.seatName === seatName);
+    console.log("ticket", ticket)
     if (ticket) {
       setSelectedTicket(ticket);
     }
