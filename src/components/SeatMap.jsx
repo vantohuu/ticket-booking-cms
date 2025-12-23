@@ -14,8 +14,6 @@ const SeatMap = ({
   selectedTicket,
   showtime,
 }) => {
-  const isSelectedSeatScanned = selectedTicket?.isScanned ?? false
-
   /* ======================
       RENDER 1 GHẾ
   ====================== */
@@ -30,7 +28,7 @@ const SeatMap = ({
       "before:content-[''] before:absolute before:bottom-[-6px] before:h-2 before:rounded-b-lg " +
       "transition-all select-none h-10 "
 
-    /* ===== FLEX SIZE (AUTO GIÃN) ===== */
+    /* ===== SIZE ===== */
     seatClass += isCouple
       ? "flex-[2] min-w-[96px] "
       : "flex-1 min-w-[48px] "
@@ -50,7 +48,7 @@ const SeatMap = ({
         seatClass += "bg-[#DEF3FF] text-[#0A4C8A] before:bg-[#96C5E7]"
       }
     } else if (isScanned) {
-      seatClass += "bg-yellow-400 text-white before:bg-yellow-600"
+      seatClass += "bg-orange-400 text-white before:bg-orange-600"
     } else {
       seatClass += "bg-gray-400 text-white before:bg-gray-600 cursor-pointer"
     }
@@ -68,7 +66,7 @@ const SeatMap = ({
   }
 
   /* ======================
-      RENDER ROW
+      RENDER 1 ROW
   ====================== */
   const renderRow = (row, rowIndex) => {
     const renderedRow = []
@@ -92,25 +90,12 @@ const SeatMap = ({
       col += seatData.seatType === "COUPLE" ? 2 : 1
     }
 
-    const isLastRow = rowIndex === seats.length - 1
-    const onlyCoupleSeats = row.every(
-      (s) => s && s.seatType === "COUPLE"
-    )
-
-    return (
-      <div
-        key={rowIndex}
-        className={`flex gap-4 w-full ${
-          isLastRow && onlyCoupleSeats ? "justify-center" : ""
-        }`}
-      >
-        {renderedRow}
-      </div>
-    )
+    return renderedRow
   }
 
   return (
-    <div className="flex gap-10 items-start w-full">
+    <div className="flex gap-10 mt-4 items-start w-full">
+
       {/* ======================
           LEGEND
       ====================== */}
@@ -119,30 +104,66 @@ const SeatMap = ({
 
         <div>
           <div className="font-medium text-sm mb-2">Loại ghế</div>
-          <Legend label="Standard" className="bg-[#DEF3FF] text-[#0A4C8A] before:bg-[#96C5E7]"/>
+          <Legend label="Standard" className="bg-[#DEF3FF] text-[#0A4C8A] before:bg-[#96C5E7]" />
           <Legend label="VIP" className="bg-[#a9e36f] text-[#9C2D12] before:bg-[#F8BEAB]" />
-          <Legend
-            label="Couple"
-            className="bg-[#F6C1E1] text-[#7A1D4F] before:bg-[#E48FC6]"
-          />
+          <Legend label="Couple" className="bg-[#F6C1E1] text-[#7A1D4F] before:bg-[#E48FC6]" />
         </div>
 
-        {bookedSeats.length > 0 &&
+        {bookedSeats.length > 0 && (
           <div className="border-t pt-2">
             <div className="font-medium text-sm mb-2">Trạng thái</div>
             <LegendSimple label="Đã đặt" className="bg-gray-400" />
-            <LegendSimple label="Đã quét QR" className="bg-yellow-400" />
+            <LegendSimple label="Đã quét QR" className="bg-orange-400" />
           </div>
-        }
-        
+        )}
+      </div>
+
+      {/* ======================
+          SEAT GRID + AXIS
+      ====================== */}
+      <div className="flex flex-col flex-1">
+
+        {/* COLUMN HEADER */}
+        <div className="flex gap-4 mb-2 ml-8">
+          {Array.from({ length: seats[0]?.length || 0 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex-1 min-w-[48px] text-center font-semibold text-sm text-gray-600"
+            >
+              {i + 1}
+            </div>
+          ))}
+        </div>
+
+        {/* ROWS */}
+        <div className="flex flex-col gap-4">
+          {seats.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex gap-4 items-center">
+
+              {/* ROW LABEL */}
+              <div className="w-6 text-center font-semibold text-gray-600">
+                {String.fromCharCode(65 + rowIndex)}
+              </div>
+
+              {/* SEATS */}
+              <div className="flex gap-4 w-full">
+                {renderRow(row, rowIndex)}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ======================
           TICKET INFO
       ====================== */}
-      
       {selectedTicket && (
-        <Card title="Thông tin vé" size="small" style={{ minWidth: 300 }}>
+        <Card
+          title="Thông tin vé"
+          className="font-semibold bg-blue-100/50"
+          size="small"
+          style={{ minWidth: 300 }}
+        >
           <p><strong>Showtime ID:</strong> {showtime.id}</p>
           <p><strong>#Ticket:</strong> {selectedTicket.id}</p>
           <p><strong>Thời gian:</strong> {dayjs(showtime.startTime).format("DD/MM/YYYY HH:mm:ss")}</p>
@@ -152,7 +173,7 @@ const SeatMap = ({
           <p><strong>Giá:</strong> {selectedTicket.price} VND</p>
           <p>
             <strong>QR:</strong>{" "}
-            {selectedTicket.isScanned === true ? (
+            {selectedTicket.isScanned ? (
               <span className="text-green-600 font-semibold">Đã quét</span>
             ) : (
               <span className="text-red-600 font-semibold">Chưa quét</span>
@@ -160,13 +181,6 @@ const SeatMap = ({
           </p>
         </Card>
       )}
-
-      {/* ======================
-          SEAT GRID
-      ====================== */}
-      <div className="flex flex-col gap-4 flex-1">
-        {seats.map(renderRow)}
-      </div>
     </div>
   )
 }

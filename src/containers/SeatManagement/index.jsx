@@ -196,7 +196,11 @@ const SeatManagement = () => {
               placeholder="Chọn suất chiếu"
               style={{ width: 580 }}
               value={selectedShowtimeId}
-              onChange={(value) => setSelectedShowtimeId(value)}
+              onChange={(value) => 
+                {
+                  setSelectedShowtimeId(value)
+                  setSelectedTicket(null);
+                }}
               disabled={!selectedRoomId || !selectedDate}
               options={showtimes.map((s) => ({
                 label: `Thời gian: ${dayjs(s.startTime).format(
